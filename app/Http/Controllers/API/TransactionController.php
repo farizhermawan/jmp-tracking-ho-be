@@ -194,99 +194,56 @@ class TransactionController extends Controller
 //    return response()->json(['message' => 'success', 'data' => $data], HttpStatus::SUCCESS);
 //  }
 
-//  public function export(Request $request)
-//  {
-//    setlocale(LC_TIME, 'Indonesian');
-//    Carbon::setLocale("id");
-//    $this->user = \Auth::user();
-//
-//    $now = Carbon::now()->addMonth(1);
-//    $hash = md5($now->timestamp);
-//    $param = json_decode($request->getContent());
-//    $activity = ActivityType::get($param->group);
-//    $template = storage_path("app/report-template/realisasi.xlsx");
-//
-//    try {
-//      $spreadsheet = IOFactory::load($template);
-//      $sheet = $spreadsheet->getActiveSheet();
-//
-//      $records = Transaction::getTransactions($param->status, $param->group, $param->dateStart, $param->dateEnd);
-//
-//      $dateString = $now->formatLocalized("%d %B %Y");
-//      $place = "Cikarang";
-//      $docPrefix = ": 000/DOC/JMP-" . strtoupper($activity->text) . "/";
-//
-//      $sheet->setCellValue("C4", $docPrefix . $now->formatLocalized("%B") . "/" . $now->formatLocalized("%Y"));
-//      $sheet->setCellValue("C5", ": " . $dateString);
-//
-//      $startRow = 9;
-//      $minRow = 5;
-//      $totalRow = $records->count();
-//      if ($totalRow < $minRow) $totalRow = $minRow;
-//      if ($totalRow > $minRow) {
-//        $diffCount = $totalRow - $minRow;
-//        $sheet->insertNewRowBefore(11, $diffCount);
-//      }
-//      $no = 0;
-//      foreach ($records as $record) {
-//        $cost = [
-//          'main' => $this->getCostOf("Uang Jalan", $record->cost_entries),
-//          'overtime' => $this->getCostOf("Biaya Inap", $record->cost_entries),
-//          'lilo' => $this->getCostOf("Lift Off", $record->cost_entries) + $this->getCostOf("Lift On", $record->cost_entries),
-//          'tol' => $this->getCostOf("Tol", $record->cost_entries)
-//        ];
-//        $cost['other'] = $record->total_cost - $cost['main'] - $cost['overtime'] - $cost['lilo'] - $cost['tol'];
-//        $sheet->setCellValue("A" . ($startRow + $no), $no + 1);
-//        $sheet->setCellValue("B" . ($startRow + $no), $record->created_at->toDateString());
-//        $sheet->setCellValue("C" . ($startRow + $no), $record->activity_name);
-//        $sheet->setCellValue("D" . ($startRow + $no), $record->vehicle_type);
-//        $sheet->setCellValue("E" . ($startRow + $no), $record->police_number);
-//        $sheet->setCellValue("F" . ($startRow + $no), $record->driver_name);
-//        $sheet->setCellValue("G" . ($startRow + $no), "");
-//        $sheet->setCellValue("H" . ($startRow + $no), $record->so);
-//        $sheet->setCellValue("I" . ($startRow + $no), $record->jot);
-//        $sheet->setCellValue("J" . ($startRow + $no), $record->container_size == '20' ? 1 : '');
-//        $sheet->setCellValue("K" . ($startRow + $no), $record->container_size == '40' ? 1 : '');
-//        if (!empty($record->container2)) {
-//          $sheet->setCellValue("L" . ($startRow + $no), $record->container . " / " . $record->container2);
-//        } else {
-//          $sheet->setCellValue("L" . ($startRow + $no), $record->container);
-//        }
-//        $sheet->setCellValue("M" . ($startRow + $no), $record->route);
-//        $sheet->setCellValue("N" . ($startRow + $no), $cost['main']);
-//        $sheet->setCellValue("O" . ($startRow + $no), $cost['overtime']);
-//        $sheet->setCellValue("P" . ($startRow + $no), $cost['lilo']);
-//        $sheet->setCellValue("Q" . ($startRow + $no), $cost['tol']);
-//        $sheet->setCellValue("R" . ($startRow + $no), $cost['other']);
-//        $sheet->setCellValue("S" . ($startRow + $no), "");
-//        $no++;
-//      }
-//
-//      $endRow = $startRow + $totalRow - 1;
-//      $sheet->setCellValue("J" . ($startRow + $totalRow), "=SUM(J" . $startRow . ":J" . $endRow . ")");
-//      $sheet->setCellValue("K" . ($startRow + $totalRow), "=SUM(K" . $startRow . ":K" . $endRow . ")");
-//      $sheet->setCellValue("N" . ($startRow + $totalRow), "=SUM(N" . $startRow . ":N" . $endRow . ")");
-//      $sheet->setCellValue("O" . ($startRow + $totalRow), "=SUM(O" . $startRow . ":O" . $endRow . ")");
-//      $sheet->setCellValue("P" . ($startRow + $totalRow), "=SUM(P" . $startRow . ":P" . $endRow . ")");
-//      $sheet->setCellValue("Q" . ($startRow + $totalRow), "=SUM(Q" . $startRow . ":Q" . $endRow . ")");
-//      $sheet->setCellValue("R" . ($startRow + $totalRow), "=SUM(R" . $startRow . ":R" . $endRow . ")");
-//      $sheet->setCellValue("N" . ($startRow + $totalRow + 1), "=SUM(N" . ($endRow + 1) . ":R" . ($endRow + 1) . ")");
-//
-//      $sheet->setCellValue("E" . ($totalRow + 12), $place . ", " . $dateString);
-//      $sheet->setCellValue("E" . ($totalRow + 18), strtoupper($this->user->name));
-//
-//      $writer = new Xlsx($spreadsheet);
-//      $writer->save(storage_path("app/public/{$hash}.xlsx"));
-//
-//      return response()->json(['message' => "success", "hash" => $hash], HttpStatus::SUCCESS);
-//    } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
-//      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
-//    } catch (\PhpOffice\PhpSpreadsheet\Writer\Exception $e) {
-//      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
-//    } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
-//      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
-//    }
-//  }
+  public function export(Request $request)
+  {
+    setlocale(LC_TIME, 'Indonesian');
+    Carbon::setLocale("id");
+    $this->user = \Auth::user();
+
+    $now = Carbon::now()->addMonth(1);
+    $hash = md5($now->timestamp);
+    $param = json_decode($request->getContent());
+    $template = storage_path("app/report-template/transaksi.xlsx");
+
+    try {
+      $spreadsheet = IOFactory::load($template);
+      $sheet = $spreadsheet->getActiveSheet();
+
+      $records = Transaction::getTransactions($param->dateStart, $param->dateEnd);
+
+      $startRow = 2;
+      $minRow = 5;
+      $totalRow = $records->count();
+      if ($totalRow < $minRow) $totalRow = $minRow;
+      if ($totalRow > $minRow) {
+        $diffCount = $totalRow - $minRow;
+        $sheet->insertNewRowBefore(11, $diffCount);
+      }
+      $no = 0;
+      foreach ($records as $record) {
+        $sheet->setCellValue("A" . ($startRow + $no), $record->created_at->toDateString());
+        $sheet->setCellValue("B" . ($startRow + $no), $record->created_at->toTimeString());
+        $sheet->setCellValue("C" . ($startRow + $no), $record->driver_name);
+        $sheet->setCellValue("D" . ($startRow + $no), $record->police_number);
+        $sheet->setCellValue("E" . ($startRow + $no), $record->customer_name);
+        $sheet->setCellValue("F" . ($startRow + $no), $record->route);
+        $sheet->setCellValue("G" . ($startRow + $no), $record->commission);
+        $sheet->setCellValue("H" . ($startRow + $no), $record->total_cost);
+        $no++;
+      }
+
+      $writer = new Xlsx($spreadsheet);
+      $writer->save(storage_path("app/public/{$hash}.xlsx"));
+
+      return response()->json(['message' => "success", "hash" => $hash], HttpStatus::SUCCESS);
+    } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
+      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
+    } catch (\PhpOffice\PhpSpreadsheet\Writer\Exception $e) {
+      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
+    } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
+      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
+    }
+  }
 
   private function createRoute($route)
   {
