@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $type
  * @property int $amount
  * @property int $ballance
+ * @property string|null $posted_by
  * @property \Illuminate\Support\Carbon $posted_at
  * @property string $entity
  * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord whereAmount($value)
@@ -26,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord whereMessage($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord wherePostedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord wherePostedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord whereRefCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord whereRefId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord whereType($value)
@@ -39,6 +41,7 @@ class FinancialRecord extends Model
 
     static function postFinancialRecord($refCode, $refId, $message, $type, $amount, $entity)
     {
+        $user = \Auth::user();
         $ballance = $type == DebitCredit::DEBIT ? FinancialRecord::getBallance($entity) + $amount : FinancialRecord::getBallance($entity) - $amount;
         $finance = new FinancialRecord();
         $finance->ref_code = $refCode;
@@ -48,6 +51,7 @@ class FinancialRecord extends Model
         $finance->amount = $amount;
         $finance->ballance = $ballance;
         $finance->entity = $entity;
+        $finance->posted_by = $user->name;
         $finance->save();
         return $finance->id;
     }
