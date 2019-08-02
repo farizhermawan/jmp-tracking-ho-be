@@ -119,7 +119,7 @@ class TransactionController extends Controller
         $adjust->save();
 
         // Post finance record
-        $postId = FinancialRecord::postFinancialRecord(RefCode::ADJUSTMENT, $adjust->id, "Adjustment transaksi tanggal {$jot->created_at->toDateString()} / {$jot->route} / {$jot->police_number} / {$jot->driver_name} oleh {$this->user->name}", $adjust->discrepancy > 0 ? DebitCredit::CREDIT : DebitCredit::DEBIT, abs($adjust->discrepancy), $entity);
+        $postId = FinancialRecord::postFinancialRecord(RefCode::ADJUSTMENT, $adjust->id, "Adjustment transaksi tanggal {$jot->created_at->toDateString()} / {$jot->route} / {$jot->police_number} / {$jot->driver_name}", $adjust->discrepancy > 0 ? DebitCredit::CREDIT : DebitCredit::DEBIT, abs($adjust->discrepancy), $entity);
 
         // Update JOT records
         $jotPostId = $jot->post_id;
