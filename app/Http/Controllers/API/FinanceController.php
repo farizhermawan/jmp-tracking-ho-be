@@ -84,8 +84,9 @@ class FinanceController extends Controller
                 $sheet->setCellValue("A" . $row, $item->posted_at->format($displayDateFormat));
                 $sheet->setCellValue("B" . $row, $item->ref_code);
                 $sheet->setCellValue("C" . $row, $item->message);
-                $sheet->setCellValue(($item->type == DebitCredit::CREDIT ? "D" : "E") . $row, $item->amount);
-                $sheet->setCellValue("F" . $row, $item->ballance);
+                $sheet->setCellValue("D" . $row, $item->posted_by);
+                $sheet->setCellValue(($item->type == DebitCredit::CREDIT ? "E" : "F") . $row, $item->amount);
+                $sheet->setCellValue("G" . $row, $item->ballance);
             }
             $writer = new Xlsx($spreadsheet);
             $writer->save(storage_path("app/public/{$hash}.xlsx"));
