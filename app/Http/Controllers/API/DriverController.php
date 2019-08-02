@@ -30,7 +30,7 @@ class DriverController extends Controller
 
     $driver = new Driver();
     $driver->name = $param->name;
-    $driver->additional_data = $param->additional_data;
+    $driver->additional_data = isset($param->additional_data) ? $param->additional_data : null;
     $driver->created_by = $this->user->name;
     $driver->save();
 
@@ -60,7 +60,7 @@ class DriverController extends Controller
     if (!$driver) return response()->json(['message' => "Data tidak ditemukan"], HttpStatus::ERROR);
 
     $driver->name = $param->name;
-    $driver->additional_data = $param->additional_data;
+    $driver->additional_data = isset($param->additional_data) ? $param->additional_data : null;
     $driver->save();
 
     return response()->json(['message' => 'success'], HttpStatus::SUCCESS);
