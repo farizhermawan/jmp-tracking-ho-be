@@ -263,7 +263,7 @@ class TransactionController extends Controller
     $jot->total_cost = 0;
     $jot->commission = 0;
     $jot->cost_entries = $costEntries = [];
-    $jot->container_size = $param->container_size->value;
+    $jot->container_size = $param->container_size;
     $jot->created_at = Carbon::now();
     $jot->created_by = $this->user->name;
 
