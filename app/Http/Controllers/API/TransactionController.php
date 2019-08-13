@@ -224,11 +224,13 @@ class TransactionController extends Controller
         $sheet->setCellValue("A" . ($startRow + $no), $record->created_at->toDateString());
         $sheet->setCellValue("B" . ($startRow + $no), $record->created_at->toTimeString());
         $sheet->setCellValue("C" . ($startRow + $no), $record->driver_name);
-        $sheet->setCellValue("D" . ($startRow + $no), $record->police_number);
-        $sheet->setCellValue("E" . ($startRow + $no), $record->customer_name);
-        $sheet->setCellValue("F" . ($startRow + $no), $record->route);
-        $sheet->setCellValue("G" . ($startRow + $no), $record->commission);
-        $sheet->setCellValue("H" . ($startRow + $no), $record->total_cost);
+        $sheet->setCellValue("D" . ($startRow + $no), $record->kenek_name);
+        $sheet->setCellValue("E" . ($startRow + $no), $record->police_number);
+        $sheet->setCellValue("F" . ($startRow + $no), $record->customer_name);
+        $sheet->setCellValue("G" . ($startRow + $no), $record->route);
+        $sheet->setCellValue("H" . ($startRow + $no), $record->commission);
+        $sheet->setCellValue("I" . ($startRow + $no), $record->commission2);
+        $sheet->setCellValue("J" . ($startRow + $no), $record->total_cost);
         $no++;
       }
 
