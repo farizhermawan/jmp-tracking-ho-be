@@ -48,10 +48,10 @@ Route::middleware('jwt')->group(function () {
     Route::post('/driver/update', 'API\DriverController@updateDriver');
     Route::post('/driver/remove', 'API\DriverController@removeDriver');
 
-    Route::post('/kenek/add', 'API\KenekController@addDriver');
-    Route::post('/kenek/toggle', 'API\KenekController@toggleDriver');
-    Route::post('/kenek/update', 'API\KenekController@updateDriver');
-    Route::post('/kenek/remove', 'API\KenekController@removeDriver');
+    Route::post('/kenek/add', 'API\KenekController@addKenek');
+    Route::post('/kenek/toggle', 'API\KenekController@toggleKenek');
+    Route::post('/kenek/update', 'API\KenekController@updateKenek');
+    Route::post('/kenek/remove', 'API\KenekController@removeKenek');
 
     Route::post('/user/add', 'API\UserController@addUser');
     Route::post('/user/toggle', 'API\UserController@toggleUser');
