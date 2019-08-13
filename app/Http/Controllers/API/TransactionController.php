@@ -258,10 +258,12 @@ class TransactionController extends Controller
     $jot = new Transaction();
     $jot->customer_name = $param->customer->name;
     $jot->driver_name = $param->driver->name;
+    $jot->kenek_name = $param->kenek->name;
     $jot->police_number = $param->police_number->police_number;
     $jot->route = $param->route->name;
     $jot->total_cost = 0;
     $jot->commission = 0;
+    $jot->commission2 = 0;
     $jot->cost_entries = $costEntries = [];
     $jot->container_size = $param->container_size;
     $jot->created_at = Carbon::now();
@@ -284,7 +286,9 @@ class TransactionController extends Controller
     if (isset($param->route->additional_data->commission)) {
       $jot->commission = $param->route->additional_data->commission;
     }
-
+    if (isset($param->route->additional_data->commission2)) {
+      $jot->commission2 = $param->route->additional_data->commission2;
+    }
     $jot->save();
     return $jot;
   }

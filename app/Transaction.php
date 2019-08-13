@@ -34,6 +34,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereRoute($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereTotalCost($value)
  * @mixin \Eloquent
+ * @property string $kenek_name
+ * @property int $commission2
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereCommission2($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereKenekName($value)
  */
 class Transaction extends Model
 {
