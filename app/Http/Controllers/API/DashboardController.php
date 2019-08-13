@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use App\Counter;
-use App\Driver;
 use App\Enums\Entity;
 use App\Enums\HttpStatus;
 use App\FinancialRecord;
@@ -11,7 +10,6 @@ use App\Http\Controllers\Controller;
 use App\Transaction;
 use App\Vehicle;
 use Carbon\Carbon;
-use DB;
 
 class DashboardController extends Controller
 {

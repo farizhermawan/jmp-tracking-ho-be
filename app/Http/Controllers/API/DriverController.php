@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Driver;
+use App\Kenek;
 use App\Enums\HttpStatus;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 /**
  * DriverController
@@ -19,7 +16,7 @@ class DriverController extends Controller
 {
   public function getAll()
   {
-    $drivers = Driver::all();
+    $drivers = Kenek::all();
     return response()->json(['data' => $drivers], HttpStatus::SUCCESS);
   }
 
@@ -28,7 +25,7 @@ class DriverController extends Controller
     $this->user = \Auth::user();
     $param = json_decode($request->getContent());
 
-    $driver = new Driver();
+    $driver = new Kenek();
     $driver->name = $param->name;
     $driver->additional_data = isset($param->additional_data) ? $param->additional_data : null;
     $driver->created_by = $this->user->name;
@@ -42,7 +39,7 @@ class DriverController extends Controller
     $this->user = \Auth::user();
     $param = json_decode($request->getContent());
 
-    $driver = Driver::whereId($param->id)->first();
+    $driver = Kenek::whereId($param->id)->first();
     if (!$driver) return response()->json(['message' => "Data tidak ditemukan"], HttpStatus::ERROR);
 
     $driver->flag_active = !$driver->flag_active;
@@ -56,7 +53,7 @@ class DriverController extends Controller
     $this->user = \Auth::user();
     $param = json_decode($request->getContent());
 
-    $driver = Driver::whereId($param->id)->first();
+    $driver = Kenek::whereId($param->id)->first();
     if (!$driver) return response()->json(['message' => "Data tidak ditemukan"], HttpStatus::ERROR);
 
     $driver->name = $param->name;
@@ -71,7 +68,7 @@ class DriverController extends Controller
     $this->user = \Auth::user();
     $param = json_decode($request->getContent());
 
-    $driver = Driver::whereId($param->id)->first();
+    $driver = Kenek::whereId($param->id)->first();
     if (!$driver) return response()->json(['message' => "Data tidak ditemukan"], HttpStatus::ERROR);
 
     try {
@@ -81,46 +78,5 @@ class DriverController extends Controller
     }
 
     return response()->json(['message' => 'success'], HttpStatus::SUCCESS);
-  }
-
-  public function export()
-  {
-    setlocale(LC_TIME, 'Indonesian');
-    Carbon::setLocale("id");
-    $this->user = \Auth::user();
-
-    $now = Carbon::now()->addMonth(1);
-    $hash = md5($now->timestamp);
-
-    $template = storage_path("app/report-template/driver.xlsx");
-
-    try {
-      $spreadsheet = IOFactory::load($template);
-      $sheet = $spreadsheet->getActiveSheet();
-
-      $records = Driver::all();
-
-      $startRow = 4;
-      $sheet->insertNewRowBefore($startRow + 1, $records->count() - 1);
-
-      $no = 0;
-      foreach ($records as $record) {
-        $sheet->setCellValue("A" . ($startRow + $no), $no + 1);
-        $sheet->setCellValue("B" . ($startRow + $no), $record->name);
-        $sheet->setCellValue("C" . ($startRow + $no), $record->flag_active ? 'Y' : 'N');
-        $no++;
-      }
-
-      $writer = new Xlsx($spreadsheet);
-      $writer->save(storage_path("app/public/{$hash}.xlsx"));
-
-      return response()->json(['message' => "success", "hash" => $hash], HttpStatus::SUCCESS);
-    } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
-      return response()->json(['message' => $e->getMessage()], HttpStatus::ERROR);
-    } catch (\PhpOffice\PhpSpreadsheet\Writer\Exception $e) {
-      return response()->json(['message' => $e->getMessage()], HttpStatus::ERROR);
-    } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
-      return response()->json(['message' => $e->getMessage()], HttpStatus::ERROR);
-    }
   }
 }

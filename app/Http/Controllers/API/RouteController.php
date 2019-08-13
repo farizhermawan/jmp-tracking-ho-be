@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Driver;
+use App\Kenek;
 use App\Enums\HttpStatus;
 use App\Http\Controllers\Controller;
 use App\Route;

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/vehicle', 'API\VehicleController@getAll');
 Route::get('/driver', 'API\DriverController@getAll');
+Route::get('/kenek', 'API\KenekController@getAll');
 Route::get('/user', 'API\UserController@getAll');
 Route::get('/route', 'API\RouteController@getAll');
 Route::get('/customer', 'API\CustomerController@getAll');
@@ -46,6 +47,11 @@ Route::middleware('jwt')->group(function () {
     Route::post('/driver/toggle', 'API\DriverController@toggleDriver');
     Route::post('/driver/update', 'API\DriverController@updateDriver');
     Route::post('/driver/remove', 'API\DriverController@removeDriver');
+
+    Route::post('/kenek/add', 'API\KenekController@addDriver');
+    Route::post('/kenek/toggle', 'API\KenekController@toggleDriver');
+    Route::post('/kenek/update', 'API\KenekController@updateDriver');
+    Route::post('/kenek/remove', 'API\KenekController@removeDriver');
 
     Route::post('/user/add', 'API\UserController@addUser');
     Route::post('/user/toggle', 'API\UserController@toggleUser');
