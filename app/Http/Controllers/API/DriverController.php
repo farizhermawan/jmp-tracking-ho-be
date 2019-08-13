@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Kenek;
+use App\Driver;
 use App\Enums\HttpStatus;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -16,7 +16,7 @@ class DriverController extends Controller
 {
   public function getAll()
   {
-    $drivers = Kenek::all();
+    $drivers = Driver::all();
     return response()->json(['data' => $drivers], HttpStatus::SUCCESS);
   }
 
@@ -25,7 +25,7 @@ class DriverController extends Controller
     $this->user = \Auth::user();
     $param = json_decode($request->getContent());
 
-    $driver = new Kenek();
+    $driver = new Driver();
     $driver->name = $param->name;
     $driver->additional_data = isset($param->additional_data) ? $param->additional_data : null;
     $driver->created_by = $this->user->name;
@@ -39,7 +39,7 @@ class DriverController extends Controller
     $this->user = \Auth::user();
     $param = json_decode($request->getContent());
 
-    $driver = Kenek::whereId($param->id)->first();
+    $driver = Driver::whereId($param->id)->first();
     if (!$driver) return response()->json(['message' => "Data tidak ditemukan"], HttpStatus::ERROR);
 
     $driver->flag_active = !$driver->flag_active;
@@ -53,7 +53,7 @@ class DriverController extends Controller
     $this->user = \Auth::user();
     $param = json_decode($request->getContent());
 
-    $driver = Kenek::whereId($param->id)->first();
+    $driver = Driver::whereId($param->id)->first();
     if (!$driver) return response()->json(['message' => "Data tidak ditemukan"], HttpStatus::ERROR);
 
     $driver->name = $param->name;
@@ -68,7 +68,7 @@ class DriverController extends Controller
     $this->user = \Auth::user();
     $param = json_decode($request->getContent());
 
-    $driver = Kenek::whereId($param->id)->first();
+    $driver = Driver::whereId($param->id)->first();
     if (!$driver) return response()->json(['message' => "Data tidak ditemukan"], HttpStatus::ERROR);
 
     try {
