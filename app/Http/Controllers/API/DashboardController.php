@@ -15,16 +15,15 @@ class DashboardController extends Controller
 {
   public function getInfo()
   {
-    setlocale(LC_TIME, 'Indonesian');
-    Carbon::setLocale("id");
     $now = Carbon::now();
-
+    $startDate = Carbon::now()->startOfMonth();
+    $endDate = Carbon::now()->endOfMonth();
     $cars = Vehicle::whereFlagActive("Y")->get(["police_number"])->pluck("police_number");
     $carStat = [];
     foreach ($cars as $car) {
       $counter = Counter::whereType("vehicles")
         ->whereField($car)
-        ->whereBetween("date", [$now->startOfMonth()->toDateString(), $now->endOfMonth()->toDateString()]);
+        ->whereBetween("date", [$startDate->toDateString(), $endDate->toDateString()]);
       $carStat[$car] = $counter->sum("value");
     }
 
