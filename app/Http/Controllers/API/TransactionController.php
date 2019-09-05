@@ -67,10 +67,10 @@ class TransactionController extends Controller
         $jot->save();
 
         // Increment counter
-        Counter::add(CounterType::DRIVER, $param->driver->name);
-        Counter::add(CounterType::VEHICLES, $param->police_number->police_number);
-        Counter::add(CounterType::ROUTE, $param->route->name);
-        Counter::add(CounterType::CUSTOMER, $param->customer->name);
+        Counter::increase(CounterType::DRIVER, $param->driver->name);
+        Counter::increase(CounterType::VEHICLES, $param->police_number->police_number);
+        Counter::increase(CounterType::ROUTE, $param->route->name);
+        Counter::increase(CounterType::CUSTOMER, $param->customer->name);
       });
     } catch (\Throwable $e) {
       return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
@@ -177,6 +177,12 @@ class TransactionController extends Controller
         // Update Remove Transaction to link finance record
         $remove->post_id = [$postId];
         $remove->save();
+
+        // Decrement counter
+        Counter::decrease(CounterType::DRIVER, $jot->driver_name, $jot->created_at);
+        Counter::decrease(CounterType::VEHICLES, $jot->police_number, $jot->created_at);
+        Counter::decrease(CounterType::ROUTE, $jot->route, $jot->created_at);
+        Counter::decrease(CounterType::CUSTOMER, $jot->customer_name, $jot->created_at);
 
         // Remove the item
         $jot->delete();

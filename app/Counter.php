@@ -4,7 +4,6 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use stdClass;
 
 /**
  * App\Counter
@@ -26,7 +25,7 @@ class Counter extends Model
     protected $table = 'counter';
     public $timestamps = false;
 
-    static function add($type, $field, $date = null)
+    static function increase($type, $field, $date = null)
     {
         if($date == null) $date = Carbon::now();
         $lastRecord = Counter::where("date", "=", $date->toDateString())->whereType($type)->whereField($field)->orderBy('id', 'desc')->first();
@@ -40,4 +39,19 @@ class Counter extends Model
         $lastRecord->value++;
         $lastRecord->save();
     }
+
+  static function decrease($type, $field, $date = null)
+  {
+    if($date == null) $date = Carbon::now();
+    $lastRecord = Counter::where("date", "=", $date->toDateString())->whereType($type)->whereField($field)->orderBy('id', 'desc')->first();
+    if (!$lastRecord) {
+      $lastRecord = new Counter();
+      $lastRecord->type = $type;
+      $lastRecord->field = $field;
+      $lastRecord->date = $date;
+      $lastRecord->value = 0;
+    }
+    $lastRecord->value--;
+    $lastRecord->save();
+  }
 }
