@@ -251,7 +251,7 @@ class TransactionController extends Controller
         $sheet->setCellValue("H" . ($startRow + $no), $record->commission);
         $sheet->setCellValue("I" . ($startRow + $no), $record->commission2);
         $otherCostName = [];
-        $otherCostColumn = ['Q', 'P', 'O', 'N', 'M'];
+        $otherCostColumn = ['V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M'];
         foreach ($record->cost_entries as $cost_entry) {
           if ($cost_entry['item'] == Common::UANG_JALAN) $sheet->setCellValue("J" . ($startRow + $no), $cost_entry['value']);
           else if ($cost_entry['item'] == Common::BIAYA_SOLAR) $sheet->setCellValue("K" . ($startRow + $no), $cost_entry['value']);
