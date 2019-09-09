@@ -94,6 +94,13 @@ class TransactionController extends Controller
         $jot->commission2 = 0;
       }
       $jot->kenek_name = $param->value;
+    } else if ($param->field == "close") {
+      $this->user = \Auth::user();
+      $closed_meta = [
+        'closed_by' => $this->user->name,
+        'closed_at' => Carbon::now()->toDateTimeString()
+      ];
+      $jot->additional_data = $closed_meta;
     }
     $jot->save();
     return response()->json(['message' => 'success'], HttpStatus::SUCCESS);
