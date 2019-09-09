@@ -260,7 +260,7 @@ class TransactionController extends Controller
             $sheet->setCellValue(array_pop($otherCostColumn) . ($startRow + $no), $cost_entry['value']);
           }
         }
-        $sheet->setCellValue("L" . ($startRow + $no), implode("\r\n", $otherCostName));
+        $sheet->setCellValue("L" . ($startRow + $no), implode(", ", $otherCostName));
 
         $no++;
       }
