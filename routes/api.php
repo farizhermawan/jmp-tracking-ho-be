@@ -70,6 +70,7 @@ Route::middleware('jwt')->group(function () {
     Route::post('/transaksi', 'API\TransactionController@getTransaksi');
     Route::post('/finance', 'API\FinanceController@getFinance');
 
+    Route::post('/export/route', 'API\RouteController@export');
     Route::post('/export/finance', 'API\FinanceController@export');
     Route::post('/export/transaksi', 'API\TransactionController@export');
 });
