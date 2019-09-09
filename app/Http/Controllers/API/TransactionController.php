@@ -288,6 +288,10 @@ class TransactionController extends Controller
     $availableAddons = [];
     $costEntries[] = ["item" => Common::UANG_JALAN, "value" => $param->cost];
     $jot->total_cost += $param->cost;
+    if ($param->solar_cost > 0) {
+      $costEntries[] = ["item" => Common::BIAYA_SOLAR, "value" => $param->solar_cost];
+      $jot->total_cost += $param->solar_cost;
+    }
     foreach ($param->addons as $addon) {
       $availableAddons[$addon->item] = true;
       $costEntries[] = ["item" => $addon->item, "value" => $addon->value];
