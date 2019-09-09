@@ -250,7 +250,18 @@ class TransactionController extends Controller
         $sheet->setCellValue("G" . ($startRow + $no), $record->route);
         $sheet->setCellValue("H" . ($startRow + $no), $record->commission);
         $sheet->setCellValue("I" . ($startRow + $no), $record->commission2);
-        $sheet->setCellValue("J" . ($startRow + $no), $record->total_cost);
+        $otherCostName = [];
+        $otherCostColumn = ['Q', 'P', 'O', 'N', 'M'];
+        foreach ($record->cost_entries as $cost_entry) {
+          if ($cost_entry['item'] == Common::UANG_JALAN) $sheet->setCellValue("J" . ($startRow + $no), $cost_entry['value']);
+          else if ($cost_entry['item'] == Common::BIAYA_SOLAR) $sheet->setCellValue("K" . ($startRow + $no), $cost_entry['value']);
+          else {
+            $otherCostName[] = $cost_entry['item'];
+            $sheet->setCellValue(array_pop($otherCostColumn) . ($startRow + $no), $cost_entry['value']);
+          }
+        }
+        $sheet->setCellValue("L" . ($startRow + $no), implode(", ", $otherCostName));
+
         $no++;
       }
 
