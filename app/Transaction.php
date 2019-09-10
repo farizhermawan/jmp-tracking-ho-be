@@ -43,20 +43,23 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Transaction extends Model
 {
-    protected $table = 'transaction';
-    protected $dates = ['created_at'];
-    protected $casts = [
-        'cost_entries' => 'array',
-        'post_id' => 'array',
-        'additional_data' => 'json'
-    ];
+  protected $table = 'transaction';
+  protected $dates = ['created_at'];
+  protected $casts = [
+    'cost_entries' => 'array',
+    'post_id' => 'array',
+    'additional_data' => 'json'
+  ];
 
-    public $timestamps = false;
+  public $timestamps = false;
 
-    static function getTransactions($dateFrom, $dateTo){
-        $records = Transaction::whereDate('created_at', '>=', $dateFrom)
-            ->whereDate('created_at', '<=', $dateTo);
-        $items = $records->get();
-        return $items;
+  static function getTransactions($dateFrom, $dateTo, $status = "Semua"){
+    $records = Transaction::whereDate('created_at', '>=', $dateFrom)
+      ->whereDate('created_at', '<=', $dateTo);
+    if ($status != "Semua") {
+      $records = $records->whereStatus($status == 'Lengkap' ? 'closed' : 'open');
     }
+    $items = $records->get();
+    return $items;
+  }
 }

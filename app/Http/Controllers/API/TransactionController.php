@@ -204,7 +204,7 @@ class TransactionController extends Controller
   public function getTransaksi(Request $request)
   {
     $param = json_decode($request->getContent());
-    $records = Transaction::getTransactions($param->dateStart, $param->dateEnd);
+    $records = Transaction::getTransactions($param->dateStart, $param->dateEnd, $param->status);
     return response()->json(['message' => 'success', 'data' => $records], HttpStatus::SUCCESS);
   }
 
@@ -230,7 +230,7 @@ class TransactionController extends Controller
       $spreadsheet = IOFactory::load($template);
       $sheet = $spreadsheet->getActiveSheet();
 
-      $records = Transaction::getTransactions($param->dateStart, $param->dateEnd);
+      $records = Transaction::getTransactions($param->dateStart, $param->dateEnd, $param->status);
 
       $startRow = 2;
       $minRow = 5;
