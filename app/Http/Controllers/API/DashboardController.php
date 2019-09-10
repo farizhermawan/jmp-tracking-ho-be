@@ -27,6 +27,7 @@ class DashboardController extends Controller
         ->whereBetween("date", [$startDate->toDateString(), $endDate->toDateString()]);
       $carStat[$car] = $counter->sum("value");
     }
+    arsort($carStat);
 
     $dashboard = [
       'today_transaction' => Transaction::whereDate('created_at', '>=', $now->toDateString())->whereDate('created_at', '<=', $now->toDateString())->count(),
