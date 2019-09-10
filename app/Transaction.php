@@ -38,6 +38,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $commission2
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereCommission2($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereKenekName($value)
+ * @property string $status
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereStatus($value)
  */
 class Transaction extends Model
 {

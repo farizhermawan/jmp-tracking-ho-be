@@ -101,6 +101,7 @@ class TransactionController extends Controller
         'closed_at' => Carbon::now()->toDateTimeString()
       ];
       $jot->additional_data = $closed_meta;
+      $jot->status = Common::CLOSED;
     }
     $jot->save();
     return response()->json(['message' => 'success'], HttpStatus::SUCCESS);

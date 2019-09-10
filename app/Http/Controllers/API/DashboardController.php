@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Counter;
+use App\Enums\Common;
 use App\Enums\Entity;
 use App\Enums\HttpStatus;
 use App\FinancialRecord;
@@ -29,6 +30,7 @@ class DashboardController extends Controller
 
     $dashboard = [
       'today_transaction' => Transaction::whereDate('created_at', '>=', $now->toDateString())->whereDate('created_at', '<=', $now->toDateString())->count(),
+      'open_transaction' => Transaction::whereStatus(Common::OPEN)->count(),
       'ballance' => [
         number_format(FinancialRecord::getBallance(Entity::HO), 0, ',', '.'),
       ],
