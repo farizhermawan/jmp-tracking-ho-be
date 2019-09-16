@@ -106,7 +106,7 @@ class RouteController extends Controller
           $sheet->setCellValue("C" . ($startRow + $no), $record->additional_data['cost']);
           $sheet->setCellValue("D" . ($startRow + $no), $record->additional_data['commission']);
           $sheet->setCellValue("E" . ($startRow + $no), $record->additional_data['commission2']);
-          $sheet->setCellValue("F" . ($startRow + $no), $record->additional_data['solar_cost']);
+          if (isset($record->additional_data['solar_cost'])) $sheet->setCellValue("F" . ($startRow + $no), $record->additional_data['solar_cost']);
         }
         $sheet->setCellValue("G" . ($startRow + $no), $record->flag_active ? 'Y' : 'N');
         $no++;
