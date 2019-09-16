@@ -30,9 +30,6 @@ class VehicleController extends Controller
 
     $vehicle = new Vehicle();
     $vehicle->police_number = $param->police_number;
-    if (!$param->use_solar) {
-      unset($param->additional_data->solar_cost);
-    }
     $vehicle->additional_data = $param->additional_data;
     $vehicle->created_by = $this->user->name;
     $vehicle->save();
@@ -63,9 +60,6 @@ class VehicleController extends Controller
     if (!$vehicle) return response()->json(['message' => "Data tidak ditemukan"], HttpStatus::ERROR);
 
     $vehicle->police_number = $param->police_number;
-    if (!$param->use_solar) {
-      unset($param->additional_data->solar_cost);
-    }
     $vehicle->additional_data = $param->additional_data;
     $vehicle->save();
 
