@@ -67,11 +67,16 @@ Route::middleware('jwt')->group(function () {
     Route::post('/jot/adjust', 'API\TransactionController@adjustJot');
     Route::post('/jot/remove', 'API\TransactionController@remove');
 
+    Route::post('/vehicle-cost/submit', 'API\VehicleCostController@saveTransaction');
+    Route::post('/vehicle-cost/remove', 'API\VehicleCostController@remove');
+
     Route::post('/transaksi', 'API\TransactionController@getTransaksi');
     Route::post('/finance', 'API\FinanceController@getFinance');
+    Route::post('/vehicle-cost', 'API\VehicleCostController@getTransaksi');
 
     Route::post('/export/route', 'API\RouteController@export');
     Route::post('/export/finance', 'API\FinanceController@export');
     Route::post('/export/transaksi', 'API\TransactionController@export');
+    Route::post('/export/vehicle-cost', 'API\UndirectCostController@export');
 });
 
