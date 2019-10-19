@@ -6,7 +6,7 @@ use DB;
 use App\VehicleCost;
 use App\Enums\Entity;
 use App\Enums\RefCode;
-use App\Helpers\PhpCurl;
+use App\Helpers\ReportDataGrabber;
 use App\Enums\HttpStatus;
 use App\RemovedTransaction;
 use Illuminate\Http\Request;
@@ -88,55 +88,32 @@ class VehicleCostController extends Controller
   {
     $hash = md5(time());
     $param = json_decode($request->getContent());
-    $template = storage_path("app/report-template/vehicle-cost.xlsx");
-    $headers = ['Authorization' => $request->header('authorization')];
+    $template = storage_path("app/report-template/vehicle-cost-report.xlsx");
+    $headers = ['Authorization: '.$request->header('authorization')];
 
     $data = array();
     $data['dateStart'] = $request->dateStart;
     $data['dateEnd'] = $request->dateEnd;
-    $curl = new PhpCurl($headers);
-
+    $report = new ReportDataGrabber($headers);
+    
     // KLARI
-    $klari = (object)$data;
-    $klari->category = 'K';
-    $klari->entity = (object)["id" => 1,"name" =>"Saldo JMP"];
-
-    $payload = json_encode($klari);
-    $url = 'https://klari.jmp-logistic.co.id/service/api/undirect';
+    $dataKlari = $report->getDataFromKlari($data);
     
-    $dataKlari = $curl->getData($url, $payload, 'Klari');
-
     // HO
-    $ho = (object)$data;
-    $ho->dateStart = $ho->dateStart.'T17:00:00.000Z';
-    $ho->dateEnd = $ho->dateEnd.'T17:00:00.000Z';
-    $ho->category = $request->category ?? 'Semua';
-    $payload = json_encode($ho);
-    $url = 'https://trucking-ho.jmp-logistic.co.id/service/api/vehicle-cost';
-    
-    $dataHo = $curl->getData($url, $payload, 'HO');
+    $dataHo = $report->getDataFromHO($data, $request->category);
 
     // CDP
-    $cdp = (object)$data;
-    $cdp->group = 'K';
-    $payload = json_encode($cdp);
-    $url = 'https://trucking-ho.jmp-logistic.co.id/service/api/vehicle-cost';
-    
-    $dataCdp = $curl->getData($url, $payload, 'CDP');
-
-    $data = array_merge($dataHo, $dataKlari, $dataCdp);
+    $dataCdp = $report->getDataFromCdp($data);
 
     try {
       $spreadsheet = IOFactory::load($template);
       $sheet = $spreadsheet->getActiveSheet();
 
       $row = 1;
-      $totalCost = 0;
-      foreach ($data as $item) {
+      foreach ($dataHo as $item) {
         $row++;
         $datetime = explode(' ', $item->created_at);
         $additional = $item->additional_data;
-        $totalCost += (int)$item->total_cost;
         $sheet->setCellValue("A" . $row, $datetime[0]);
         $sheet->setCellValue("B" . $row, $datetime[1]);
         $sheet->setCellValue("C" . $row, isset($additional->police_number) ? $additional->police_number : "");
@@ -144,10 +121,38 @@ class VehicleCostController extends Controller
         $sheet->setCellValue("E" . $row, $item->category);
         $sheet->setCellValue("F" . $row, $item->note);
         $sheet->setCellValue("G" . $row, $item->total_cost);
+        $sheet->setCellValue("H" . $row, 'HO');
       }
-      $row++;
-      $sheet->setCellValue("F" . $row, 'TOTAL');
-      $sheet->setCellValue("G" . $row, $totalCost);
+
+      foreach ($dataKlari as $item) {
+        $row++;
+        $datetime = explode(' ', $item->created_at);
+        $additional = $item->additional_data;
+        $totalCost += $item->total_cost;
+        $sheet->setCellValue("A" . $row, $datetime[0]);
+        $sheet->setCellValue("B" . $row, $datetime[1]);
+        $sheet->setCellValue("C" . $row, isset($additional->police_number) ? $additional->police_number : "");
+        $sheet->setCellValue("D" . $row, isset($additional->employee) ? $additional->employee : "");
+        $sheet->setCellValue("E" . $row, $item->category);
+        $sheet->setCellValue("F" . $row, $item->note);
+        $sheet->setCellValue("G" . $row, $item->total_cost);
+        $sheet->setCellValue("H" . $row, 'Klari');
+      }
+
+      foreach ($dataCdp as $item) {
+        $row++;
+        $datetime = explode(' ', $item->created_at);
+        $additional = $item->additional_data;
+        $totalCost += $item->total_cost;
+        $sheet->setCellValue("A" . $row, $datetime[0]);
+        $sheet->setCellValue("B" . $row, $datetime[1]);
+        $sheet->setCellValue("C" . $row, isset($additional->police_number) ? $additional->police_number : "");
+        $sheet->setCellValue("D" . $row, isset($additional->employee) ? $additional->employee : "");
+        $sheet->setCellValue("E" . $row, $item->category);
+        $sheet->setCellValue("F" . $row, $item->note);
+        $sheet->setCellValue("G" . $row, $item->total_cost);
+        $sheet->setCellValue("H" . $row, 'CDP');
+      }
       $writer = new Xlsx($spreadsheet);
       $writer->save(storage_path("app/public/{$hash}.xlsx"));
 
