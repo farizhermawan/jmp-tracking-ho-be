@@ -31,11 +31,11 @@ class ReportDataGrabber
     {
         $url = 'https://trucking-ho.jmp-logistic.co.id/service/api/vehicle-cost';
         self::$status = false;
-        $ho = (object)$data;
-        $ho->dateStart = $ho->dateStart.'T17:00:00.000Z';
-        $ho->dateEnd = $ho->dateEnd.'T17:00:00.000Z';
-        $ho->category = $category ?? 'Semua';
-        $payload = json_encode($ho);
+        
+        $data->dateStart = $data->dateStart.'T17:00:00.000Z';
+        $data->dateEnd = $data->dateEnd.'T17:00:00.000Z';
+        $data->category = $category ?? 'Semua';
+        $payload = json_encode($data);
 
         $responses = self::runCurl($url, $payload);
         if(self::$status) return $responses->data;
@@ -49,10 +49,10 @@ class ReportDataGrabber
         $url = 'https://klari.jmp-logistic.co.id/service/api/undirect';
         
         self::$status = false;
-        $klari = (object) $data;
-        $klari->category = $kategori;
-        $klari->entity = (object) $entity;
-        $payload = json_encode($klari);
+        
+        $data->category = $kategori;
+        $data->entity = (object) $entity;
+        $payload = json_encode($data);
         
         $responses = self::runCurl($url, $payload);
         if(self::$status) return $responses->data;
@@ -66,9 +66,9 @@ class ReportDataGrabber
         $url = 'https://cdp-kontrak.jmp-logistic.co.id/service/api/undirect';
         
         self::$status = false;
-        $cdp = (object) $data;
-        $cdp->group = $group;
-        $payload = json_encode($cdp);
+        
+        $data->group = $group;
+        $payload = json_encode($data);
         
         $responses = self::runCurl($url, $payload);
         if(self::$status) return $responses->data;

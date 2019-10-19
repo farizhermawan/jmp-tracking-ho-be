@@ -91,9 +91,10 @@ class VehicleCostController extends Controller
     $template = storage_path("app/report-template/vehicle-cost-report.xlsx");
     $headers = ['Authorization: '.$request->header('authorization')];
 
-    $data = array();
-    $data['dateStart'] = $request->dateStart;
-    $data['dateEnd'] = $request->dateEnd;
+    $data = (object) array();
+    $data->dateStart = $request->dateStart;
+    $data->dateEnd = $request->dateEnd;
+    
     $report = new ReportDataGrabber($headers);
     
     // KLARI
@@ -128,7 +129,6 @@ class VehicleCostController extends Controller
         $row++;
         $datetime = explode(' ', $item->created_at);
         $additional = $item->additional_data;
-        $totalCost += $item->total_cost;
         $sheet->setCellValue("A" . $row, $datetime[0]);
         $sheet->setCellValue("B" . $row, $datetime[1]);
         $sheet->setCellValue("C" . $row, isset($additional->police_number) ? $additional->police_number : "");
@@ -143,7 +143,6 @@ class VehicleCostController extends Controller
         $row++;
         $datetime = explode(' ', $item->created_at);
         $additional = $item->additional_data;
-        $totalCost += $item->total_cost;
         $sheet->setCellValue("A" . $row, $datetime[0]);
         $sheet->setCellValue("B" . $row, $datetime[1]);
         $sheet->setCellValue("C" . $row, isset($additional->police_number) ? $additional->police_number : "");
