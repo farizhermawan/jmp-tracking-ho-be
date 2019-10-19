@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\API;
 
 use DB;
+use stdClass;
 use App\VehicleCost;
 use App\Enums\Entity;
 use App\Enums\RefCode;
-use App\Helpers\ReportDataGrabber;
 use App\Enums\HttpStatus;
 use App\RemovedTransaction;
 use Illuminate\Http\Request;
+use App\Helpers\ReportDataGrabber;
 use App\Http\Controllers\Controller;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -84,27 +85,56 @@ class VehicleCostController extends Controller
     return response()->json(['message' => 'success'], HttpStatus::SUCCESS);
   }
 
-  public function export(Request $request)
+    public function export(Request $request)
+  {
+    $hash = md5(time());
+    $param = json_decode($request->getContent());
+    $template = storage_path("app/report-template/vehicle-cost.xlsx");
+    try {
+      $spreadsheet = IOFactory::load($template);
+      $sheet = $spreadsheet->getActiveSheet();
+      $items = VehicleCost::getTransactions($param->category, $param->dateStart, $param->dateEnd);
+      $row = 1;
+      foreach ($items as $item) {
+        $row++;
+        $sheet->setCellValue("A" . $row, $item->created_at->toDateString());
+        $sheet->setCellValue("B" . $row, $item->created_at->toTimeString());
+        $sheet->setCellValue("C" . $row, $item->additional_data['police_number']);
+        $sheet->setCellValue("D" . $row, $item->additional_data['driver']);
+        $sheet->setCellValue("E" . $row, $item->category);
+        $sheet->setCellValue("F" . $row, $item->note);
+        $sheet->setCellValue("G" . $row, $item->total_cost);
+      }
+      $writer = new Xlsx($spreadsheet);
+      $writer->save(storage_path("app/public/{$hash}.xlsx"));
+      return response()->json(['message' => "success", "hash" => $hash], HttpStatus::SUCCESS);
+    } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
+      return response()->json(['message' => $e->getMessage()], HttpStatus::ERROR);
+    } catch (\PhpOffice\PhpSpreadsheet\Writer\Exception $e) {
+      return response()->json(['message' => $e->getMessage()], HttpStatus::ERROR);
+    } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
+      return response()->json(['message' => $e->getMessage()], HttpStatus::ERROR);
+    }
+  }
+
+  public function exportReport(Request $request)
   {
     $hash = md5(time());
     $param = json_decode($request->getContent());
     $template = storage_path("app/report-template/vehicle-cost-report.xlsx");
     $headers = ['Authorization: '.$request->header('authorization')];
 
-    $data = (object) array();
+    $data = new stdClass();
     $data->dateStart = $request->dateStart;
     $data->dateEnd = $request->dateEnd;
     
-    $report = new ReportDataGrabber($headers);
+    $reportGrabber = new ReportDataGrabber($headers);
     
-    // KLARI
-    $dataKlari = $report->getDataFromKlari($data);
+    $dataKlari = $reportGrabber->getDataFromKlari($data);
     
-    // HO
-    $dataHo = $report->getDataFromHO($data, $request->category);
+    $dataHo = $reportGrabber->getDataFromHO($data, $request->category);
 
-    // CDP
-    $dataCdp = $report->getDataFromCdp($data);
+    $dataCdp = $reportGrabber->getDataFromCdp($data);
 
     try {
       $spreadsheet = IOFactory::load($template);
