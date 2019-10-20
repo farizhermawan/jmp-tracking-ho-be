@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Enums\Entity;
-use App\Enums\HttpStatus;
-use App\Enums\RefCode;
-use App\Http\Controllers\Controller;
-use App\RemovedTransaction;
-use App\VehicleCost;
 use DB;
+use stdClass;
+use App\VehicleCost;
+use App\Enums\Entity;
+use App\Enums\RefCode;
+use App\Enums\HttpStatus;
+use App\RemovedTransaction;
 use Illuminate\Http\Request;
+use App\Helpers\ReportDataGrabber;
+use App\Http\Controllers\Controller;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -83,18 +85,15 @@ class VehicleCostController extends Controller
     return response()->json(['message' => 'success'], HttpStatus::SUCCESS);
   }
 
-  public function export(Request $request)
+    public function export(Request $request)
   {
     $hash = md5(time());
     $param = json_decode($request->getContent());
     $template = storage_path("app/report-template/vehicle-cost.xlsx");
-
     try {
       $spreadsheet = IOFactory::load($template);
       $sheet = $spreadsheet->getActiveSheet();
-
       $items = VehicleCost::getTransactions($param->category, $param->dateStart, $param->dateEnd);
-
       $row = 1;
       foreach ($items as $item) {
         $row++;
@@ -105,6 +104,83 @@ class VehicleCostController extends Controller
         $sheet->setCellValue("E" . $row, $item->category);
         $sheet->setCellValue("F" . $row, $item->note);
         $sheet->setCellValue("G" . $row, $item->total_cost);
+      }
+      $writer = new Xlsx($spreadsheet);
+      $writer->save(storage_path("app/public/{$hash}.xlsx"));
+      return response()->json(['message' => "success", "hash" => $hash], HttpStatus::SUCCESS);
+    } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
+      return response()->json(['message' => $e->getMessage()], HttpStatus::ERROR);
+    } catch (\PhpOffice\PhpSpreadsheet\Writer\Exception $e) {
+      return response()->json(['message' => $e->getMessage()], HttpStatus::ERROR);
+    } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
+      return response()->json(['message' => $e->getMessage()], HttpStatus::ERROR);
+    }
+  }
+
+  public function exportReport(Request $request)
+  {
+    $hash = md5(time());
+    $param = json_decode($request->getContent());
+    $template = storage_path("app/report-template/vehicle-cost-report.xlsx");
+    $headers = ['Authorization: '.$request->header('authorization')];
+
+    $data = new stdClass();
+    $data->dateStart = $request->dateStart;
+    $data->dateEnd = $request->dateEnd;
+    
+    $reportGrabber = new ReportDataGrabber($headers);
+    
+    $dataKlari = $reportGrabber->getDataFromKlari($data);
+    
+    $dataHo = $reportGrabber->getDataFromHO($data, $request->category);
+
+    $dataCdp = $reportGrabber->getDataFromCdp($data);
+
+    try {
+      $spreadsheet = IOFactory::load($template);
+      $sheet = $spreadsheet->getActiveSheet();
+
+      $row = 1;
+      foreach ($dataHo as $item) {
+        $row++;
+        $datetime = explode(' ', $item->created_at);
+        $additional = $item->additional_data;
+        $sheet->setCellValue("A" . $row, $datetime[0]);
+        $sheet->setCellValue("B" . $row, $datetime[1]);
+        $sheet->setCellValue("C" . $row, isset($additional->police_number) ? $additional->police_number : "");
+        $sheet->setCellValue("D" . $row, isset($additional->employee) ? $additional->employee : "");
+        $sheet->setCellValue("E" . $row, $item->category);
+        $sheet->setCellValue("F" . $row, $item->note);
+        $sheet->setCellValue("G" . $row, $item->total_cost);
+        $sheet->setCellValue("H" . $row, 'HO');
+      }
+
+      foreach ($dataKlari as $item) {
+        $row++;
+        $datetime = explode(' ', $item->created_at);
+        $additional = $item->additional_data;
+        $sheet->setCellValue("A" . $row, $datetime[0]);
+        $sheet->setCellValue("B" . $row, $datetime[1]);
+        $sheet->setCellValue("C" . $row, isset($additional->police_number) ? $additional->police_number : "");
+        $sheet->setCellValue("D" . $row, isset($additional->employee) ? $additional->employee : "");
+        $sheet->setCellValue("E" . $row, $item->category);
+        $sheet->setCellValue("F" . $row, $item->note);
+        $sheet->setCellValue("G" . $row, $item->total_cost);
+        $sheet->setCellValue("H" . $row, 'Klari');
+      }
+
+      foreach ($dataCdp as $item) {
+        $row++;
+        $datetime = explode(' ', $item->created_at);
+        $additional = $item->additional_data;
+        $sheet->setCellValue("A" . $row, $datetime[0]);
+        $sheet->setCellValue("B" . $row, $datetime[1]);
+        $sheet->setCellValue("C" . $row, isset($additional->police_number) ? $additional->police_number : "");
+        $sheet->setCellValue("D" . $row, isset($additional->employee) ? $additional->employee : "");
+        $sheet->setCellValue("E" . $row, $item->category);
+        $sheet->setCellValue("F" . $row, $item->note);
+        $sheet->setCellValue("G" . $row, $item->total_cost);
+        $sheet->setCellValue("H" . $row, 'CDP');
       }
       $writer = new Xlsx($spreadsheet);
       $writer->save(storage_path("app/public/{$hash}.xlsx"));
