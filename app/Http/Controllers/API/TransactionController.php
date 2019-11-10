@@ -247,21 +247,22 @@ class TransactionController extends Controller
         $sheet->setCellValue("C" . ($startRow + $no), $record->driver_name);
         $sheet->setCellValue("D" . ($startRow + $no), $record->kenek_name);
         $sheet->setCellValue("E" . ($startRow + $no), $record->police_number);
-        $sheet->setCellValue("F" . ($startRow + $no), $record->customer_name);
-        $sheet->setCellValue("G" . ($startRow + $no), $record->route);
-        $sheet->setCellValue("H" . ($startRow + $no), $record->commission);
-        $sheet->setCellValue("I" . ($startRow + $no), $record->commission2);
+        $sheet->setCellValue("F" . ($startRow + $no), $record->container_size);
+        $sheet->setCellValue("G" . ($startRow + $no), $record->customer_name);
+        $sheet->setCellValue("H" . ($startRow + $no), $record->route);
+        $sheet->setCellValue("I" . ($startRow + $no), $record->commission);
+        $sheet->setCellValue("J" . ($startRow + $no), $record->commission2);
         $otherCostName = [];
-        $otherCostColumn = ['V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M'];
+        $otherCostColumn = ['W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N'];
         foreach ($record->cost_entries as $cost_entry) {
-          if ($cost_entry['item'] == Common::UANG_JALAN) $sheet->setCellValue("J" . ($startRow + $no), $cost_entry['value']);
-          else if ($cost_entry['item'] == Common::BIAYA_SOLAR) $sheet->setCellValue("K" . ($startRow + $no), $cost_entry['value']);
+          if ($cost_entry['item'] == Common::UANG_JALAN) $sheet->setCellValue("K" . ($startRow + $no), $cost_entry['value']);
+          else if ($cost_entry['item'] == Common::BIAYA_SOLAR) $sheet->setCellValue("L" . ($startRow + $no), $cost_entry['value']);
           else {
             $otherCostName[] = $cost_entry['item'];
             $sheet->setCellValue(array_pop($otherCostColumn) . ($startRow + $no), $cost_entry['value']);
           }
         }
-        $sheet->setCellValue("L" . ($startRow + $no), implode(", ", $otherCostName));
+        $sheet->setCellValue("M" . ($startRow + $no), implode(", ", $otherCostName));
 
         $no++;
       }
