@@ -27,6 +27,7 @@ Route::post('/auth/saved', 'API\AuthController@savedAuth');
 Route::middleware('jwt')->group(function () {
     Route::get('/auth/profile', 'API\AuthController@getProfile');
     Route::get ('/dashboard', 'API\DashboardController@getInfo');
+    Route::post('/monitor', 'API\MonitoringController@getMonitor');
 
     Route::post('/route/add', 'API\RouteController@addRoute');
     Route::post('/route/toggle', 'API\RouteController@toggleRoute');
