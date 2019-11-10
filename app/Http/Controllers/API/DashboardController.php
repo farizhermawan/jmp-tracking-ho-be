@@ -17,17 +17,19 @@ class DashboardController extends Controller
   public function getInfo()
   {
     $now = Carbon::now();
-    $startDate = Carbon::now()->startOfMonth();
-    $endDate = Carbon::now()->endOfMonth();
     $cars = Vehicle::whereFlagActive("Y")->get(["police_number"])->pluck("police_number");
     $carStat = [];
     foreach ($cars as $car) {
-      $counter = Counter::whereType("vehicles")
-        ->whereField($car)
-        ->whereBetween("date", [$startDate->toDateString(), $endDate->toDateString()]);
-      $carStat[$car] = $counter->sum("value");
+      $dateToLook = [Carbon::now(), Carbon::now()->addMonth(-1), Carbon::now()->addMonth(-2)];
+      foreach ($dateToLook as $date) {
+        $startDate = $date->startOfMonth()->toDateString();
+        $endDate = $date->endOfMonth()->toDateString();
+        $counter = Counter::whereType("vehicles")
+          ->whereField($car)
+          ->whereBetween("date", [$startDate, $endDate]);
+        $carStat[$car][] = $counter->sum("value");
+      }
     }
-    arsort($carStat);
 
     $dashboard = [
       'today_transaction' => Transaction::whereDate('created_at', '>=', $now->toDateString())->whereDate('created_at', '<=', $now->toDateString())->count(),
