@@ -26,10 +26,12 @@ class MonitoringController extends Controller
       if (isset($ritasi[$trx->police_number])) $ritasi[$trx->police_number]++;
       else $ritasi[$trx->police_number] = 1;
 
+      $cust_name = trim(str_replace("PT", "", $trx->customer_name));
+      if (strlen($cust_name) > 15) $cust_name = substr($cust_name, 0, 15) . "...";
       $result[] = [
         'police_number' => $trx->police_number,
         'driver_name' => $trx->driver_name,
-        'customer_name' => $trx->customer_name,
+        'customer_name' => $cust_name,
         'transaction_time' => $trx->created_at->format("h:m"),
         'ritasi' => $ritasi[$trx->police_number],
         'status' => $trx->status
