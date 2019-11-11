@@ -17,6 +17,19 @@ class DashboardController extends Controller
   public function getInfo()
   {
     $now = Carbon::now();
+    $dashboard = [
+      'today_transaction' => Transaction::whereDate('created_at', '>=', $now->toDateString())->whereDate('created_at', '<=', $now->toDateString())->count(),
+      'open_transaction' => Transaction::whereStatus(Common::OPEN)->count(),
+      'ballance' => [
+        number_format(FinancialRecord::getBallance(Entity::HO), 0, ',', '.'),
+      ]
+    ];
+
+    return response()->json(['data' => $dashboard], HttpStatus::SUCCESS);
+  }
+
+  public function getRitasi()
+  {
     $cars = Vehicle::whereFlagActive("Y")->get(["police_number"])->pluck("police_number");
     $carStat = [];
     foreach ($cars as $car) {
@@ -31,15 +44,6 @@ class DashboardController extends Controller
       }
     }
 
-    $dashboard = [
-      'today_transaction' => Transaction::whereDate('created_at', '>=', $now->toDateString())->whereDate('created_at', '<=', $now->toDateString())->count(),
-      'open_transaction' => Transaction::whereStatus(Common::OPEN)->count(),
-      'ballance' => [
-        number_format(FinancialRecord::getBallance(Entity::HO), 0, ',', '.'),
-      ],
-      'car_stat' => $carStat
-    ];
-
-    return response()->json(['data' => $dashboard], HttpStatus::SUCCESS);
+    return response()->json(['data' => $carStat], HttpStatus::SUCCESS);
   }
 }
