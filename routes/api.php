@@ -78,6 +78,7 @@ Route::middleware('jwt')->group(function () {
     Route::post('/export/route', 'API\RouteController@export');
     Route::post('/export/finance', 'API\FinanceController@export');
     Route::post('/export/transaksi', 'API\TransactionController@export');
+    Route::post('/export/transaksi-detail', 'API\TransactionController@exportDetail');
     Route::post('/export/vehicle-cost', 'API\VehicleCostController@export');
     Route::post('/export/vehicle-cost-report', 'API\VehicleCostController@exportReport');
 });
