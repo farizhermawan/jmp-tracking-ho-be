@@ -29,6 +29,7 @@ class MonitoringController extends Controller
       $cust_name = trim(str_replace("PT", "", $trx->customer_name));
       if (strlen($cust_name) > 15) $cust_name = substr($cust_name, 0, 15) . "...";
       $result[] = [
+        'id' => $trx->id,
         'police_number' => $trx->police_number,
         'driver_name' => $trx->driver_name,
         'customer_name' => $cust_name,
