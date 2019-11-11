@@ -103,7 +103,7 @@ class TransactionController extends Controller
       ];
       $jot->additional_data = $confirmed_meta;
       $jot->status = Common::CONFIRMED;
-    } else if ($param->field == "close" && $jot->status == Common::CONFIRMED) {
+    } else if ($param->field == "close") {
       $this->user = \Auth::user();
       $closed_meta = [
         'closed_by' => $this->user->name,
