@@ -32,7 +32,7 @@ class MonitoringController extends Controller
         'police_number' => $trx->police_number,
         'driver_name' => $trx->driver_name,
         'customer_name' => $cust_name,
-        'transaction_time' => $trx->created_at->format("h:m"),
+        'transaction_time' => $trx->created_at->format("H:i"),
         'ritasi' => $ritasi[$trx->police_number],
         'status' => $trx->status
       ];
