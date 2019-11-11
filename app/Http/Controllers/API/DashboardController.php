@@ -30,10 +30,28 @@ class DashboardController extends Controller
 
   public function getRitasi()
   {
+    $selectedPeriode = Carbon::now();
+    if (isset($_GET['date'])) {
+      list($monthName, $year) = explode(" ", $_GET['date']);
+      if ($monthName == "Januari") $month = 1;
+      else if ($monthName == "Februari") $month = 2;
+      else if ($monthName == "Maret") $month = 3;
+      else if ($monthName == "April") $month = 4;
+      else if ($monthName == "Mei") $month = 5;
+      else if ($monthName == "Juni") $month = 6;
+      else if ($monthName == "Juli") $month = 7;
+      else if ($monthName == "Agustus") $month = 8;
+      else if ($monthName == "September") $month = 9;
+      else if ($monthName == "Oktober") $month = 10;
+      else if ($monthName == "November") $month = 11;
+      else if ($monthName == "Desember") $month = 12;
+      $year = intval($year);
+      $selectedPeriode = Carbon::createFromDate($year, $month);
+    }
     $cars = Vehicle::whereFlagActive("Y")->get(["police_number"])->pluck("police_number");
     $carStat = [];
     foreach ($cars as $car) {
-      $dateToLook = [Carbon::now(), Carbon::now()->addMonth(-1), Carbon::now()->addMonth(-2)];
+      $dateToLook = [$selectedPeriode, $selectedPeriode->copy()->addMonth(-1), $selectedPeriode->copy()->addMonth(-2)];
       foreach ($dateToLook as $date) {
         $startDate = $date->startOfMonth()->toDateString();
         $endDate = $date->endOfMonth()->toDateString();
