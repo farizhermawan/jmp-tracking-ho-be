@@ -50,13 +50,13 @@ class DashboardController extends Controller
     }
     $cars = Vehicle::whereFlagActive("Y")->get(["police_number"])->pluck("police_number");
     $carStat = [];
+    $dateToLook = [
+      $selectedPeriode,
+      $selectedPeriode->copy()->addMonth(-1),
+      $selectedPeriode->copy()->addMonth(-2),
+      $selectedPeriode->copy()->addMonth(-3)
+    ];
     foreach ($cars as $car) {
-      $dateToLook = [
-        $selectedPeriode,
-        $selectedPeriode->copy()->addMonth(-1),
-        $selectedPeriode->copy()->addMonth(-2),
-        $selectedPeriode->copy()->addMonth(-3)
-      ];
       foreach ($dateToLook as $date) {
         $startDate = $date->startOfMonth()->toDateString();
         $endDate = $date->endOfMonth()->toDateString();
