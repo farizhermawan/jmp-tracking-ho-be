@@ -9,6 +9,7 @@ final class Common extends Enum
     const UANG_JALAN  = "Uang Jalan";
     const BIAYA_SOLAR = "Tambahan Biaya Solar";
 
-    const OPEN   = "OPEN";
-    const CLOSED = "CLOSED";
+    const OPEN      = "OPEN";
+    const CONFIRMED = "CONFIRMED";
+    const CLOSED    = "CLOSED";
 }

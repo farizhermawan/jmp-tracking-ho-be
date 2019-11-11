@@ -95,13 +95,21 @@ class TransactionController extends Controller
         $jot->commission2 = 0;
       }
       $jot->kenek_name = $param->value;
-    } else if ($param->field == "close") {
+    } else if ($param->field == "confirm") {
+      $this->user = \Auth::user();
+      $confirmed_meta = [
+        'confirmed_by' => $this->user->name,
+        'confirmed_at' => Carbon::now()->toDateTimeString()
+      ];
+      $jot->additional_data = $confirmed_meta;
+      $jot->status = Common::CONFIRMED;
+    } else if ($param->field == "close" && $jot->status == Common::CONFIRMED) {
       $this->user = \Auth::user();
       $closed_meta = [
         'closed_by' => $this->user->name,
         'closed_at' => Carbon::now()->toDateTimeString()
       ];
-      $jot->additional_data = $closed_meta;
+      $jot->additional_data = array_merge((array) $jot->additional_data, $closed_meta);
       $jot->status = Common::CLOSED;
     }
     $jot->save();
