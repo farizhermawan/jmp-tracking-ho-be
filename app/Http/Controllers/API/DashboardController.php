@@ -19,7 +19,7 @@ class DashboardController extends Controller
     $now = Carbon::now();
     $dashboard = [
       'today_transaction' => Transaction::whereDate('created_at', '>=', $now->toDateString())->whereDate('created_at', '<=', $now->toDateString())->count(),
-      'open_transaction' => Transaction::whereStatus(Common::OPEN)->count(),
+      'open_transaction' => Transaction::whereStatus(Common::OPEN)->count() + Transaction::whereStatus(Common::CONFIRMED)->count(),
       'ballance' => [
         number_format(FinancialRecord::getBallance(Entity::HO), 0, ',', '.'),
       ]

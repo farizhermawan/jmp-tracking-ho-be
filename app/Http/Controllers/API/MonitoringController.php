@@ -19,7 +19,7 @@ class MonitoringController extends Controller
     $param = json_decode($request->getContent());
     $date = !empty($param->date) ? Carbon::parse($param->date)->setTimezone('Asia/Jakarta')->toDateString() : Carbon::now()->toDateString();
 
-    $trxs = Transaction::getTransactions($date, $date);
+    $trxs = Transaction::getTransactionsForMonitor($date);
     $result = [];
     $ritasi = [];
     foreach ($trxs as $trx) {

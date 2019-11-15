@@ -58,7 +58,16 @@ class Transaction extends Model
       ->whereDate('created_at', '<=', $dateTo);
     if ($status != "Semua") {
       $records = $records->whereStatus($status == 'Lengkap' ? 'closed' : 'open');
+    } else {
+      $records = $records->where('status', '<>', 'plan');
     }
+    $items = $records->get();
+    return $items;
+  }
+
+  static function getTransactionsForMonitor($date){
+    $records = Transaction::whereDate('created_at', '>=', $date)
+      ->whereDate('created_at', '<=', $date);
     $items = $records->get();
     return $items;
   }

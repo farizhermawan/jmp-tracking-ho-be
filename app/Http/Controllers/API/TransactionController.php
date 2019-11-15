@@ -80,6 +80,45 @@ class TransactionController extends Controller
     return response()->json(['message' => 'success', 'data' => $jot], HttpStatus::SUCCESS);
   }
 
+  public function savePlan(Request $request)
+  {
+    $this->user = \Auth::user();
+    $param = json_decode($request->getContent());
+
+    // Create new route if needed
+    if ($param->route->id == null) $this->createRoute($param->route);
+
+    $jot = null;
+    try {
+      DB::transaction(function () use ($jot, $param) {
+        list($date, $monthName, $year) = explode(" ", $param->date);
+        if ($monthName == "Januari") $month = 1;
+        else if ($monthName == "Februari") $month = 2;
+        else if ($monthName == "Maret") $month = 3;
+        else if ($monthName == "April") $month = 4;
+        else if ($monthName == "Mei") $month = 5;
+        else if ($monthName == "Juni") $month = 6;
+        else if ($monthName == "Juli") $month = 7;
+        else if ($monthName == "Agustus") $month = 8;
+        else if ($monthName == "September") $month = 9;
+        else if ($monthName == "Oktober") $month = 10;
+        else if ($monthName == "November") $month = 11;
+        else if ($monthName == "Desember") $month = 12;
+        $date = intval($date);
+        $year = intval($year);
+        // Create new JOT
+        $jot = $this->createJot($param);
+        $jot->created_at = Carbon::createFromDate($year, $month, $date);
+        $jot->status = Common::PLAN;
+        $jot->save();
+      });
+    } catch (\Throwable $e) {
+      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
+    }
+
+    return response()->json(['message' => 'success', 'data' => $jot], HttpStatus::SUCCESS);
+  }
+
   public function updateJot(Request $request)
   {
     $param = json_decode($request->getContent());
