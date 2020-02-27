@@ -65,9 +65,10 @@ Route::middleware('jwt')->group(function () {
 
     Route::post('/jot/view', 'API\TransactionController@viewJot');
     Route::post('/jot/submit', 'API\TransactionController@saveJot');
+    Route::post('/jot/revise', 'API\TransactionController@reviseJot');
     Route::post('/jot/update', 'API\TransactionController@updateJot');
     Route::post('/jot/adjust', 'API\TransactionController@adjustJot');
-    Route::post('/jot/remove', 'API\TransactionController@remove');
+    Route::post('/jot/remove', 'API\TransactionController@removeJot');
 
     Route::post('/plan/submit', 'API\TransactionController@savePlan');
 

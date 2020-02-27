@@ -80,6 +80,55 @@ class TransactionController extends Controller
     return response()->json(['message' => 'success', 'data' => $jot], HttpStatus::SUCCESS);
   }
 
+  public function reviseJot(Request $request)
+  {
+    $this->user = \Auth::user();
+    $param = json_decode($request->getContent());
+
+    $oldJot = Transaction::whereId($param->id)->first();
+    if (!$oldJot) return response()->json(['message' => 'Data tidak ditemukan!'], HttpStatus::SUCCESS);
+
+    // Create new route if needed
+    if ($param->route->id == null) $this->createRoute($param->route);
+
+    $jot = null;
+    try {
+      $result = DB::transaction(function () use ($oldJot, $jot, $param) {
+        // Remove old JOT
+        $this->remove($oldJot);
+
+        // Create new JOT
+        $jot = $this->createJot($param);
+        $jot->created_at = $oldJot->created_at;
+
+        $entity = Entity::HO;
+
+        // Post finance record
+        $postId = FinancialRecord::postFinancialRecord(RefCode::DIRECT, $jot->id, "[Revisi] Uang jalan transaksi tanggal {$jot->created_at->toDateString()} / {$jot->route} / {$jot->police_number} / {$jot->driver_name}", DebitCredit::CREDIT, $jot->total_cost, $entity);
+
+        // check if entity ballance enough
+        if (FinancialRecord::getBallance($entity) < 0) {
+          throw new Exception("Saldo akhir tidak boleh dibawah nol");
+        }
+
+        // Update JOT to link finance record
+        $jot->post_id = [$postId];
+        $jot->save();
+
+        // Increment counter
+        Counter::increase(CounterType::DRIVER, $param->driver->name);
+        Counter::increase(CounterType::VEHICLES, $param->police_number->police_number);
+        Counter::increase(CounterType::ROUTE, $param->route->name);
+        Counter::increase(CounterType::CUSTOMER, $param->customer->name);
+
+        return response()->json(['message' => 'success', 'data' => $jot], HttpStatus::SUCCESS);
+      });
+    } catch (\Throwable $e) {
+      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
+    }
+    return $result;
+  }
+
   public function savePlan(Request $request)
   {
     $this->user = \Auth::user();
@@ -207,7 +256,7 @@ class TransactionController extends Controller
     return response()->json(['message' => 'success'], HttpStatus::SUCCESS);
   }
 
-  public function remove(Request $request)
+  public function removeJot(Request $request)
   {
     $this->user = \Auth::user();
     $param = json_decode($request->getContent());
@@ -216,37 +265,43 @@ class TransactionController extends Controller
 
     try {
       DB::transaction(function () use ($param, $jot) {
-        // Get record entity
-        $entity = Entity::HO;
-
-        // Records Remove Transaction History
-        $remove = new RemovedTransaction();
-        $remove->source = RefCode::DIRECT;
-        $remove->ref = $jot->id;
-        $remove->additional_data = $jot->toJson();
-        $remove->created_by = $this->user->name;
-        $remove->save();
-
-        // Post finance record
-        $postId = FinancialRecord::postFinancialRecord(RefCode::DELETE, $remove->id, "Pembatalan transaksi tanggal {$jot->created_at->toDateString()} / {$jot->route} / {$jot->police_number} / {$jot->driver_name}", DebitCredit::DEBIT, $jot->total_cost, $entity);
-
-        // Update Remove Transaction to link finance record
-        $remove->post_id = [$postId];
-        $remove->save();
-
-        // Decrement counter
-        Counter::decrease(CounterType::DRIVER, $jot->driver_name, $jot->created_at);
-        Counter::decrease(CounterType::VEHICLES, $jot->police_number, $jot->created_at);
-        Counter::decrease(CounterType::ROUTE, $jot->route, $jot->created_at);
-        Counter::decrease(CounterType::CUSTOMER, $jot->customer_name, $jot->created_at);
-
-        // Remove the item
-        $jot->delete();
+        $this->remove($jot);
       });
     } catch (\Throwable $e) {
-      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);    }
-
+      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
+    }
     return response()->json(['message' => 'success'], HttpStatus::SUCCESS);
+  }
+
+  public function remove(Transaction $jot)
+  {
+    $this->user = \Auth::user();
+    // Get record entity
+    $entity = Entity::HO;
+
+    // Records Remove Transaction History
+    $remove = new RemovedTransaction();
+    $remove->source = RefCode::DIRECT;
+    $remove->ref = $jot->id;
+    $remove->additional_data = $jot->toJson();
+    $remove->created_by = $this->user->name;
+    $remove->save();
+
+    // Post finance record
+    $postId = FinancialRecord::postFinancialRecord(RefCode::DELETE, $remove->id, "Pembatalan transaksi tanggal {$jot->created_at->toDateString()} / {$jot->route} / {$jot->police_number} / {$jot->driver_name}", DebitCredit::DEBIT, $jot->total_cost, $entity);
+
+    // Update Remove Transaction to link finance record
+    $remove->post_id = [$postId];
+    $remove->save();
+
+    // Decrement counter
+    Counter::decrease(CounterType::DRIVER, $jot->driver_name, $jot->created_at);
+    Counter::decrease(CounterType::VEHICLES, $jot->police_number, $jot->created_at);
+    Counter::decrease(CounterType::ROUTE, $jot->route, $jot->created_at);
+    Counter::decrease(CounterType::CUSTOMER, $jot->customer_name, $jot->created_at);
+
+    // Remove the item
+    $jot->delete();
   }
 
   public function getTransaksi(Request $request)

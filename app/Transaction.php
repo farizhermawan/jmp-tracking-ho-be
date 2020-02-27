@@ -61,7 +61,7 @@ class Transaction extends Model
     } else {
       $records = $records->where('status', '<>', 'plan');
     }
-    $items = $records->get();
+    $items = $records->orderBy('created_at')->get();
     return $items;
   }
 
