@@ -1,6 +1,6 @@
 <?php
 
-use Laravel\Telescope\Http\Middleware\Authorize;
+use App\Http\Middleware\AuthenticateWithBasicAuth;
 use Laravel\Telescope\Watchers;
 
 return [
@@ -76,7 +76,7 @@ return [
     */
 
     'middleware' => [
-        'web'
+        'web', AuthenticateWithBasicAuth::class
     ],
 
     /*
