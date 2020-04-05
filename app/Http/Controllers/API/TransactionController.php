@@ -365,6 +365,9 @@ class TransactionController extends Controller
             $sheet->setCellValue(array_pop($otherCostColumn) . ($startRow + $no), $cost_entry['value']);
           }
         }
+        if ($record->solar_cost > 0) {
+          $sheet->setCellValue("L" . ($startRow + $no), $record->solar_cost);
+        }
         $sheet->setCellValue("M" . ($startRow + $no), implode(", ", $otherCostName));
 
         $no++;
@@ -432,12 +435,17 @@ class TransactionController extends Controller
         $sheetSupir->setCellValue("E" . ($startRow + $no), $record->customer_name);
         $sheetSupir->setCellValue("F" . ($startRow + $no), $record->route);
         $sheetSupir->setCellValue("G" . ($startRow + $no), $record->commission);
-        foreach ($record->cost_entries as $cost_entry) {
-          if ($cost_entry['item'] == Common::BIAYA_SOLAR) {
-            $sheetSupir->setCellValue("H" . ($startRow + $no), $cost_entry['value']);
-            break;
+        if ($record->solar_cost > 0) {
+          $sheetSupir->setCellValue("H" . ($startRow + $no), $record->solar_cost);
+        } else {
+          foreach ($record->cost_entries as $cost_entry) {
+            if ($cost_entry['item'] == Common::BIAYA_SOLAR) {
+              $sheetSupir->setCellValue("H" . ($startRow + $no), $cost_entry['value']);
+              break;
+            }
           }
         }
+
         $totalRecord++;
         $no++;
         if ($lastDriver != $record->driver_name || $no == $totalRow) {
