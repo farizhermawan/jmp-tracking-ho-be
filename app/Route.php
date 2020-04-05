@@ -21,6 +21,9 @@ use stdClass;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Route whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Route whereName($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Route newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Route newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Route query()
  */
 class Route extends Model
 {

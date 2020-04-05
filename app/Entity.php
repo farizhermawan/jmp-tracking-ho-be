@@ -13,6 +13,9 @@ use stdClass;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Entity whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Entity whereName($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Entity newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Entity newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Entity query()
  */
 class Entity extends Model
 {

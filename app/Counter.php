@@ -19,6 +19,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Counter whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Counter whereValue($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Counter newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Counter newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Counter query()
  */
 class Counter extends Model
 {

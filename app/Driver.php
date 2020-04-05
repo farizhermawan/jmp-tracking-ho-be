@@ -20,6 +20,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver whereName($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Driver query()
  */
 class Driver extends Model
 {

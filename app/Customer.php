@@ -20,6 +20,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereName($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer query()
  */
 class Customer extends Model
 {

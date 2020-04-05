@@ -539,6 +539,7 @@ class TransactionController extends Controller
     $jot->total_cost = 0;
     $jot->commission = 0;
     $jot->commission2 = 0;
+    $jot->solar_cost = 0;
     $jot->cost_entries = $costEntries = [];
     $jot->container_size = $param->container_size;
     $jot->created_at = Carbon::now();
@@ -549,10 +550,6 @@ class TransactionController extends Controller
     $availableAddons = [];
     $costEntries[] = ["item" => Common::UANG_JALAN, "value" => $param->cost];
     $jot->total_cost += $param->cost;
-    if ($param->solar_cost > 0) {
-      $costEntries[] = ["item" => Common::BIAYA_SOLAR, "value" => $param->solar_cost];
-      $jot->total_cost += $param->solar_cost;
-    }
     foreach ($param->addons as $addon) {
       $availableAddons[$addon->item] = true;
       $costEntries[] = ["item" => $addon->item, "value" => $addon->value];
@@ -571,6 +568,12 @@ class TransactionController extends Controller
         $jot->commission2 = $param->route->additional_data->commission2;
       }
     }
+
+    // solar cost
+    if ($param->solar_cost > 0) {
+      $jot->solar_cost = $param->solar_cost;
+    }
+
     $jot->save();
     return $jot;
   }

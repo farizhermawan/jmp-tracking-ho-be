@@ -22,6 +22,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\RemovedTransaction whereRef($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\RemovedTransaction whereSource($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\RemovedTransaction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\RemovedTransaction newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\RemovedTransaction query()
  */
 class RemovedTransaction extends Model
 {

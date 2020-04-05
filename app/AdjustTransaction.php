@@ -24,6 +24,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\AdjustTransaction wherePostId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\AdjustTransaction whereRef($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\AdjustTransaction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\AdjustTransaction newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\AdjustTransaction query()
  */
 class AdjustTransaction extends Model
 {

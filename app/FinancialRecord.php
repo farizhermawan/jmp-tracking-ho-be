@@ -32,6 +32,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord whereRefId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord whereType($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\FinancialRecord query()
  */
 class FinancialRecord extends Model
 {

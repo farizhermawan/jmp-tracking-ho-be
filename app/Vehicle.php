@@ -21,6 +21,9 @@ use stdClass;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Vehicle whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Vehicle wherePoliceNumber($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Vehicle newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Vehicle newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Vehicle query()
  */
 class Vehicle extends Model
 {

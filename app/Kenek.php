@@ -20,6 +20,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Kenek whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Kenek whereName($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Kenek newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Kenek newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Kenek query()
  */
 class Kenek extends Model
 {

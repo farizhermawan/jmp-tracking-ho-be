@@ -21,6 +21,9 @@ use stdClass;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\RequestBallance whereEntity($value)
  * @property string|null $post_id
  * @method static \Illuminate\Database\Eloquent\Builder|\App\RequestBallance wherePostId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\RequestBallance newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\RequestBallance newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\RequestBallance query()
  */
 class RequestBallance extends Model
 {

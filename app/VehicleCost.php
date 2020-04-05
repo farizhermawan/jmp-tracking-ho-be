@@ -24,6 +24,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\VehicleCost wherePostId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\VehicleCost whereTotalCost($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\VehicleCost newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\VehicleCost newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\VehicleCost query()
  */
 class VehicleCost extends Model
 {
