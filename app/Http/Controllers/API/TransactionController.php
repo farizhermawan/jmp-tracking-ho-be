@@ -489,10 +489,11 @@ class TransactionController extends Controller
         $sheetKenek->setCellValue("A" . ($startRow + $no), $record->created_at->toDateString());
         $sheetKenek->setCellValue("B" . ($startRow + $no), $record->created_at->toTimeString());
         $sheetKenek->setCellValue("C" . ($startRow + $no), $record->kenek_name);
-        $sheetKenek->setCellValue("D" . ($startRow + $no), $record->police_number);
-        $sheetKenek->setCellValue("E" . ($startRow + $no), $record->customer_name);
-        $sheetKenek->setCellValue("F" . ($startRow + $no), $record->route);
-        $sheetKenek->setCellValue("G" . ($startRow + $no), $record->commission2);
+        $sheetKenek->setCellValue("D" . ($startRow + $no), $record->driver_name);
+        $sheetKenek->setCellValue("E" . ($startRow + $no), $record->police_number);
+        $sheetKenek->setCellValue("F" . ($startRow + $no), $record->customer_name);
+        $sheetKenek->setCellValue("G" . ($startRow + $no), $record->route);
+        $sheetKenek->setCellValue("H" . ($startRow + $no), $record->commission2);
         $totalRecord++;
         $no++;
         if ($lastKenek != $record->kenek_name || $no + $totalSkipped == $totalRow) {
@@ -502,7 +503,7 @@ class TransactionController extends Controller
           if ($start < $startRow) $start = $startRow;
           if ($end == $totalRow - $totalSkipped) $end++;
           $sheetKenek->mergeCellsByColumnAndRow(9, $start, 9, $end);
-          $sheetKenek->setCellValue("I" . ($start), sprintf("=SUM(G%s:H%s)", $start, $end));
+          $sheetKenek->setCellValue("J" . ($start), sprintf("=SUM(H%s:I%s)", $start, $end));
           $sheetKenek->getStyle("A{$start}:I{$end}")->applyFromArray([
             'borders' => [
               'outline' => [
@@ -512,8 +513,8 @@ class TransactionController extends Controller
           ]);
         }
       }
-      $sheetSummary->setCellValue("B5", "=SUM('komisi kenek'!G{$startRow}:G{$end})");
-      $sheetSummary->setCellValue("B7", "=SUM('komisi kenek'!H{$startRow}:H{$end})");
+      $sheetSummary->setCellValue("B5", "=SUM('komisi kenek'!H{$startRow}:H{$end})");
+      $sheetSummary->setCellValue("B7", "=SUM('komisi kenek'!I{$startRow}:I{$end})");
 
       $spreadsheet->setActiveSheetIndex(0);
       $writer = new Xlsx($spreadsheet);
