@@ -502,9 +502,9 @@ class TransactionController extends Controller
           $start = $end - $totalRecord + 1;
           if ($start < $startRow) $start = $startRow;
           if ($end == $totalRow - $totalSkipped) $end++;
-          $sheetKenek->mergeCellsByColumnAndRow(9, $start, 9, $end);
+          $sheetKenek->mergeCellsByColumnAndRow(10, $start, 10, $end);
           $sheetKenek->setCellValue("J" . ($start), sprintf("=SUM(H%s:I%s)", $start, $end));
-          $sheetKenek->getStyle("A{$start}:I{$end}")->applyFromArray([
+          $sheetKenek->getStyle("A{$start}:J{$end}")->applyFromArray([
             'borders' => [
               'outline' => [
                 'borderStyle' => Border::BORDER_THIN
