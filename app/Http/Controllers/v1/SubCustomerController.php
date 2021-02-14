@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\v1;
 
-use App\Enums\HttpStatus;
+use App\Helpers\Report\MasterSubCustomerReport;
 use App\Http\RestResponse;
 use App\Http\Controllers\Controller;
 use App\Models\MasterData;
@@ -51,5 +51,12 @@ class SubCustomerController extends Controller
       return RestResponse::error($e->getMessage());
     }
     return RestResponse::deleted($data);
+  }
+
+  public function export(Request $request)
+  {
+    $param = json_decode($request->getContent());
+    $report = new MasterSubCustomerReport();
+    return $report->generate($param);
   }
 }

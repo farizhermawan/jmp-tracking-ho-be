@@ -96,9 +96,11 @@ Route::group(['prefix' => 'api', 'namespace' => 'API'], function () {
 
 Route::group(['prefix' => 'v1', 'namespace' => 'v1'], function () {
   Route::group(['middleware' => 'jwt'], function () {
-    // Master Data
     Route::resource('sub-customers','SubCustomerController')->except(['create', 'edit']);
+    Route::post('sub-customers', 'SubCustomerController@export');
+
     Route::resource('depo-mt','DepoMTController')->except(['create', 'edit']);
+    Route::post('depo-mt', 'DepoMTController@export');
   });
 });
 
