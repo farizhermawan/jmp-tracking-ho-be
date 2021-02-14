@@ -4,7 +4,7 @@ namespace App\Http\Controllers\v1;
 
 use App\Enums\HttpStatus;
 use App\Http\Controllers\Controller;
-use App\MasterData;
+use App\Models\MasterData;
 use Illuminate\Http\Request;
 
 class SubCustomerController extends Controller
