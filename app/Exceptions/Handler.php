@@ -2,8 +2,13 @@
 
 namespace App\Exceptions;
 
+use App\Http\RestResponse;
 use Exception;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -46,6 +51,20 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        return parent::render($request, $exception);
+      // This will replace all exception with a JSON response.
+      $status_code = 500;
+      $msg = $exception->getMessage();
+      if ($exception instanceof ModelNotFoundException) {
+        $status_code = 404;
+        $model = explode("\\", $exception->getModel());
+        $msg = sprintf("%s not found [%s]", end($model), join(", ", $exception->getIds()));
+      }
+      else if ($exception instanceof ConflictHttpException) $status_code = 409;
+      else if ($exception instanceof AuthenticationException) $status_code = 401;
+      else if ($exception instanceof NotFoundHttpException) {
+        $status_code = 404;
+        $msg = "API not found";
+      }
+      return RestResponse::error($msg, $status_code);
     }
 }

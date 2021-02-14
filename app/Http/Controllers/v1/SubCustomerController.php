@@ -3,17 +3,18 @@
 namespace App\Http\Controllers\v1;
 
 use App\Enums\HttpStatus;
+use App\Http\RestResponse;
 use App\Http\Controllers\Controller;
 use App\Models\MasterData;
 use Illuminate\Http\Request;
 
 class SubCustomerController extends Controller
 {
-  private $entity = "sub_customer";
+  private $entity = "SubCustomer";
 
   public function index()
   {
-    return response()->json(['data' => MasterData::whereGroup($this->entity)->get()], HttpStatus::SUCCESS);
+    return RestResponse::data(['data' => MasterData::whereGroup($this->entity)->get()]);
   }
 
   public function store(Request $request)
@@ -21,34 +22,34 @@ class SubCustomerController extends Controller
     $data = new MasterData($request->all());
     $data->group = $this->entity;
     $data->save();
-    return response()->json(['message' => 'success'], HttpStatus::SUCCESS);
+    return RestResponse::created($data);
   }
 
   public function show(MasterData $sub_customer)
   {
     $data = $sub_customer;
-    if ($data->group != $this->entity) response()->json(["message" => "missmatch entity"], HttpStatus::ERROR);
-    return response()->json($data, HttpStatus::SUCCESS);
+    if ($data->group != $this->entity) return RestResponse::error("missmatch entity");
+    return RestResponse::data($data);
   }
 
   public function update(Request $request, MasterData $sub_customer)
   {
     $data = $sub_customer;
-    if ($data->group != $this->entity) response()->json(["message" => "missmatch entity"], HttpStatus::ERROR);
+    if ($data->group != $this->entity) return RestResponse::error("missmatch entity");
     $data->update($request->all());
     $data->save();
-    return response()->json(['message' => 'success'], HttpStatus::SUCCESS);
+    return RestResponse::updated($data);
   }
 
   public function destroy(MasterData $sub_customer)
   {
     $data = $sub_customer;
-    if ($data->group != $this->entity) response()->json(["message" => "missmatch entity"], HttpStatus::ERROR);
+    if ($data->group != $this->entity) return RestResponse::error("missmatch entity");
     try {
       $data->delete();
     } catch (\Exception $e) {
-      return response()->json(['message' => $e->getMessage()], HttpStatus::ERROR);
+      return RestResponse::error($e->getMessage());
     }
-    return response()->json(['message' => 'success'], HttpStatus::SUCCESS);
+    return RestResponse::deleted($data);
   }
 }
