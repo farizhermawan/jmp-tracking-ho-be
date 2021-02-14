@@ -8,13 +8,14 @@ use Illuminate\Database\Eloquent\Model;
  * App\Transaction
  *
  * @property int $id
+ * @property string|null $container_no
  * @property string $police_number
  * @property string $driver_name
  * @property string|null $kenek_name
  * @property string $customer_name
+ * @property string|null $subcustomer_name
+ * @property string|null $depo_mt
  * @property string|null $container_size
- * @property string $route
- * @property int $commission
  * @property int $commission2
  * @property int $solar_cost
  * @property int $total_cost
@@ -24,26 +25,31 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon $created_at
  * @property array|null $additional_data
  * @property string $status
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereAdditionalData($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereCommission($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereCommission2($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereContainerSize($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereCostEntries($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereCustomerName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereDriverName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereKenekName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction wherePoliceNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction wherePostId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereRoute($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereSolarCost($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Transaction whereTotalCost($value)
+ * @property string $route
+ * @property int $commission
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereAdditionalData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereCommission($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereCommission2($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereContainerNo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereContainerSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereCostEntries($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereCustomerName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereDepoMt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereDriverName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereKenekName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction wherePoliceNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction wherePostId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereRoute($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereSolarCost($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereSubcustomerName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereTotalCost($value)
  * @mixin \Eloquent
  */
 class Transaction extends Model

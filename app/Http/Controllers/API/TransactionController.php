@@ -583,6 +583,10 @@ class TransactionController extends Controller
       $jot->solar_cost = $param->solar_cost;
     }
 
+    if (isset($param->container_no)) $jot->container_no = $param->container_no;
+    if (isset($param->sub_customer->name)) $jot->subcustomer_name = $param->sub_customer->name;
+    if (isset($param->depo_mt->name)) $jot->depo_mt = $param->depo_mt->name;
+
     $jot->save();
     return $jot;
   }
