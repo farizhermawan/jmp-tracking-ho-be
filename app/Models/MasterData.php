@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,6 +28,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class MasterData extends Model
 {
+  use Auditable;
+
   protected $table = 'master_data';
   protected $dates = ['created_at'];
   public $timestamps = false;
