@@ -96,11 +96,10 @@ Route::group(['prefix' => 'api', 'namespace' => 'API'], function () {
 
 Route::group(['prefix' => 'v1', 'namespace' => 'v1'], function () {
   Route::group(['middleware' => 'jwt'], function () {
+    Route::post('/sub-customers/export', 'SubCustomerController@export')->name("sub-customers.export");
     Route::resource('sub-customers','SubCustomerController')->except(['create', 'edit']);
-    Route::post('sub-customers', 'SubCustomerController@export');
 
+    Route::post('/depo-mt/export', 'DepoMTController@export')->name("depo-mt.export");
     Route::resource('depo-mt','DepoMTController')->except(['create', 'edit']);
-    Route::post('depo-mt', 'DepoMTController@export');
   });
 });
-
