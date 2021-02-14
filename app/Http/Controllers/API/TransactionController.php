@@ -173,9 +173,19 @@ class TransactionController extends Controller
     $param = json_decode($request->getContent());
     $jot = Transaction::whereId($param->key)->first();
     if (!$jot) return response()->json(['message' => 'Data tidak ditemukan!'], HttpStatus::SUCCESS);
-    if ($param->field == "container_size") {
+    if ($param->field == "container_no") {
+      $jot->container_no = $param->value;
+    }
+    else if ($param->field == "container_size") {
       $jot->container_size = strtoupper($param->value);
-    } else if ($param->field == "kenek") {
+    }
+    else if ($param->field == "subcustomer_name") {
+      $jot->subcustomer_name = $param->value;
+    }
+    else if ($param->field == "depo_mt") {
+      $jot->depo_mt = $param->value;
+    }
+    else if ($param->field == "kenek") {
       if ($jot->kenek_name == null) {
         $route = Route::whereName($jot->route)->first();
         $jot->commission2 = $route->additional_data['commission2'];
@@ -183,7 +193,8 @@ class TransactionController extends Controller
         $jot->commission2 = 0;
       }
       $jot->kenek_name = $param->value;
-    } else if ($param->field == "confirm") {
+    }
+    else if ($param->field == "confirm") {
       $this->user = \Auth::user();
       $confirmed_meta = [
         'confirmed_by' => $this->user->name,
@@ -191,7 +202,8 @@ class TransactionController extends Controller
       ];
       $jot->additional_data = $confirmed_meta;
       $jot->status = Common::CONFIRMED;
-    } else if ($param->field == "close") {
+    }
+    else if ($param->field == "close") {
       $this->user = \Auth::user();
       $closed_meta = [
         'closed_by' => $this->user->name,
