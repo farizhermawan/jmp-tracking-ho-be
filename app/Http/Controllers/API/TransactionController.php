@@ -11,6 +11,7 @@ use App\Enums\Entity;
 use App\Enums\HttpStatus;
 use App\Enums\RefCode;
 use App\FinancialRecord;
+use App\Helpers\Report\TransactionReport;
 use App\Http\Controllers\Controller;
 use App\Transaction;
 use App\RemovedTransaction;
@@ -332,70 +333,9 @@ class TransactionController extends Controller
 
   public function export(Request $request)
   {
-    setlocale(LC_TIME, 'Indonesian');
-    Carbon::setLocale("id");
-    $this->user = \Auth::user();
-
-    $now = Carbon::now()->addMonth(1);
-    $hash = md5($now->timestamp);
     $param = json_decode($request->getContent());
-    $template = storage_path("app/report-template/transaksi.xlsx");
-
-    try {
-      $spreadsheet = IOFactory::load($template);
-      $sheet = $spreadsheet->getActiveSheet();
-
-      $records = Transaction::getTransactions($param->dateStart, $param->dateEnd, $param->status);
-
-      $startRow = 2;
-      $minRow = 5;
-      $totalRow = $records->count();
-      if ($totalRow < $minRow) $totalRow = $minRow;
-      if ($totalRow > $minRow) {
-        $diffCount = $totalRow - $minRow;
-        $sheet->insertNewRowBefore(11, $diffCount);
-      }
-      $no = 0;
-      foreach ($records as $record) {
-        $sheet->setCellValue("A" . ($startRow + $no), $record->created_at->toDateString());
-        $sheet->setCellValue("B" . ($startRow + $no), $record->created_at->toTimeString());
-        $sheet->setCellValue("C" . ($startRow + $no), $record->driver_name);
-        $sheet->setCellValue("D" . ($startRow + $no), $record->kenek_name);
-        $sheet->setCellValue("E" . ($startRow + $no), $record->police_number);
-        $sheet->setCellValue("F" . ($startRow + $no), $record->container_size);
-        $sheet->setCellValue("G" . ($startRow + $no), $record->customer_name);
-        $sheet->setCellValue("H" . ($startRow + $no), $record->route);
-        $sheet->setCellValue("I" . ($startRow + $no), $record->commission);
-        $sheet->setCellValue("J" . ($startRow + $no), $record->commission2);
-        $otherCostName = [];
-        $otherCostColumn = ['W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N'];
-        foreach ($record->cost_entries as $cost_entry) {
-          if ($cost_entry['item'] == Common::UANG_JALAN) $sheet->setCellValue("K" . ($startRow + $no), $cost_entry['value']);
-          else if ($cost_entry['item'] == Common::BIAYA_SOLAR) $sheet->setCellValue("L" . ($startRow + $no), $cost_entry['value']);
-          else {
-            $otherCostName[] = $cost_entry['item'];
-            $sheet->setCellValue(array_pop($otherCostColumn) . ($startRow + $no), $cost_entry['value']);
-          }
-        }
-        if ($record->solar_cost > 0) {
-          $sheet->setCellValue("L" . ($startRow + $no), $record->solar_cost);
-        }
-        $sheet->setCellValue("M" . ($startRow + $no), implode(", ", $otherCostName));
-
-        $no++;
-      }
-
-      $writer = new Xlsx($spreadsheet);
-      $writer->save(storage_path("app/public/{$hash}.xlsx"));
-
-      return response()->json(['message' => "success", "hash" => $hash], HttpStatus::SUCCESS);
-    } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
-      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
-    } catch (\PhpOffice\PhpSpreadsheet\Writer\Exception $e) {
-      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
-    } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
-      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
-    }
+    $report = new TransactionReport();
+    return $report->generate($param);
   }
 
   public function exportDetail(Request $request)
