@@ -22,6 +22,7 @@ class DashboardController extends Controller
       'open_transaction' => Transaction::whereStatus(Common::OPEN)->count() + Transaction::whereStatus(Common::CONFIRMED)->count(),
       'ballance' => [
         number_format(FinancialRecord::getBallance(Entity::HO), 0, ',', '.'),
+        number_format(FinancialRecord::getBallance(Entity::BANK), 0, ',', '.'),
       ]
     ];
 
