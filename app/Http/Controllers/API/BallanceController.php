@@ -40,12 +40,16 @@ class BallanceController extends Controller
         $requestBallance->save();
 
         $postId = [];
+
         if ($param->amount > 0) {
+          if ($requestBallance->entity != Entity::BANK) $postId[] = FinancialRecord::postFinancialRecord(RefCode::BALLANCE, $requestBallance->id, "Transfer ke {$param->entity->name}", DebitCredit::CREDIT, abs($param->amount), Entity::BANK);
           $postId[] = FinancialRecord::postFinancialRecord(RefCode::BALLANCE, $requestBallance->id, "Penambahan Saldo", DebitCredit::DEBIT, $param->amount, $requestBallance->entity);
         } else {
           $param->amount = abs($param->amount);
+          if ($requestBallance->entity != Entity::BANK) $postId[] = FinancialRecord::postFinancialRecord(RefCode::BALLANCE, $requestBallance->id, "Refund dari {$param->entity->name}", DebitCredit::DEBIT, abs($param->amount), Entity::BANK);
           $postId[] = FinancialRecord::postFinancialRecord(RefCode::BALLANCE, $requestBallance->id, "Pengurangan Saldo", DebitCredit::CREDIT, abs($param->amount), $requestBallance->entity);
         }
+
         $requestBallance->post_id = $postId;
         $requestBallance->save();
       });
