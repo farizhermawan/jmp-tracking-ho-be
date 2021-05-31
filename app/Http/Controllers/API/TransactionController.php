@@ -353,7 +353,7 @@ class TransactionController extends Controller
     $result = ["passed" => false];
     $param = json_decode($request->getContent());
     if (!empty($param->itruck)) {
-      if (!Transaction::whereItruck($param->value)->exists()) $result["error"] = "No I-Truck {$param->value} telah digunakan";
+      if (!Transaction::whereItruck($param->itruck)->exists()) $result["itruck"] = "No I-Truck {$param->itruck} telah digunakan";
     }
     $result["passed"] = true;
     return response()->json($result, HttpStatus::SUCCESS);
