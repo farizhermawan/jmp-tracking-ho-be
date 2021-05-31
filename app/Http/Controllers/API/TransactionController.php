@@ -176,6 +176,7 @@ class TransactionController extends Controller
     $jot = Transaction::whereId($param->key)->first();
     if (!$jot) return response()->json(['message' => 'Data tidak ditemukan!'], HttpStatus::SUCCESS);
     if ($param->field == "itruck") {
+      if (Transaction::whereItruck($param->value)->exists()) return response()->json(['message' => 'No I-Truck sudah digunakan'], HttpStatus::SUCCESS);
       $jot->itruck = $param->value;
     }
     else if ($param->field == "container_no") {
