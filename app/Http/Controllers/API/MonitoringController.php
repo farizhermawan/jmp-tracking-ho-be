@@ -31,6 +31,7 @@ class MonitoringController extends Controller
       $result[] = [
         'id' => $trx->id,
         'police_number' => $trx->police_number,
+        'itruck' => $trx->itruck,
         'driver_name' => $trx->driver_name,
         'customer_name' => $cust_name,
         'transaction_time' => $trx->created_at->format("H:i"),
