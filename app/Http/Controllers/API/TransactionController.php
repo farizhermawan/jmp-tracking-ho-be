@@ -355,7 +355,7 @@ class TransactionController extends Controller
     $param = json_decode($request->getContent());
     if (!empty($param->itruck)) {
       if (Transaction::whereItruck($param->itruck)->exists()) {
-        $result["errors"][] = ["key" => "itruck", "error" => "No I-Truck {$param->itruck} telah digunakan"];
+        $result["errors"][] = ["key" => "itruck", "error" => "No I-Truck telah digunakan"];
       }
     }
     $result["passed"] = count($result["errors"]) == 0;
