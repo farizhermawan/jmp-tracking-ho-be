@@ -30,31 +30,32 @@ class TransactionReport extends ReportGenerator
     foreach ($records as $record) {
       $sheet->setCellValue("A" . ($startRow + $no), $record->created_at->toDateString());
       $sheet->setCellValue("B" . ($startRow + $no), $record->created_at->toTimeString());
-      $sheet->setCellValue("C" . ($startRow + $no), $record->driver_name);
-      $sheet->setCellValue("D" . ($startRow + $no), $record->kenek_name);
-      $sheet->setCellValue("E" . ($startRow + $no), $record->police_number);
-      $sheet->setCellValue("F" . ($startRow + $no), $record->container_size);
-      $sheet->setCellValue("G" . ($startRow + $no), $record->container_no);
-      $sheet->setCellValue("H" . ($startRow + $no), $record->customer_name);
-      $sheet->setCellValue("I" . ($startRow + $no), $record->subcustomer_name);
-      $sheet->setCellValue("J" . ($startRow + $no), $record->depo_mt);
-      $sheet->setCellValue("K" . ($startRow + $no), $record->route);
-      $sheet->setCellValue("L" . ($startRow + $no), $record->commission);
-      $sheet->setCellValue("M" . ($startRow + $no), $record->commission2);
+      $sheet->setCellValue("C" . ($startRow + $no), $record->itruck);
+      $sheet->setCellValue("D" . ($startRow + $no), $record->driver_name);
+      $sheet->setCellValue("E" . ($startRow + $no), $record->kenek_name);
+      $sheet->setCellValue("F" . ($startRow + $no), $record->police_number);
+      $sheet->setCellValue("G" . ($startRow + $no), $record->container_size);
+      $sheet->setCellValue("H" . ($startRow + $no), $record->container_no);
+      $sheet->setCellValue("I" . ($startRow + $no), $record->customer_name);
+      $sheet->setCellValue("J" . ($startRow + $no), $record->subcustomer_name);
+      $sheet->setCellValue("K" . ($startRow + $no), $record->depo_mt);
+      $sheet->setCellValue("L" . ($startRow + $no), $record->route);
+      $sheet->setCellValue("M" . ($startRow + $no), $record->commission);
+      $sheet->setCellValue("N" . ($startRow + $no), $record->commission2);
       $otherCostName = [];
-      $otherCostColumn = ['Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q'];
+      $otherCostColumn = ['AA', 'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R'];
       foreach ($record->cost_entries as $cost_entry) {
-        if ($cost_entry['item'] == Common::UANG_JALAN) $sheet->setCellValue("N" . ($startRow + $no), $cost_entry['value']);
-        else if ($cost_entry['item'] == Common::BIAYA_SOLAR) $sheet->setCellValue("O" . ($startRow + $no), $cost_entry['value']);
+        if ($cost_entry['item'] == Common::UANG_JALAN) $sheet->setCellValue("O" . ($startRow + $no), $cost_entry['value']);
+        else if ($cost_entry['item'] == Common::BIAYA_SOLAR) $sheet->setCellValue("P" . ($startRow + $no), $cost_entry['value']);
         else {
           $otherCostName[] = $cost_entry['item'];
           $sheet->setCellValue(array_pop($otherCostColumn) . ($startRow + $no), $cost_entry['value']);
         }
       }
       if ($record->solar_cost > 0) {
-        $sheet->setCellValue("O" . ($startRow + $no), $record->solar_cost);
+        $sheet->setCellValue("P" . ($startRow + $no), $record->solar_cost);
       }
-      $sheet->setCellValue("P" . ($startRow + $no), implode(", ", $otherCostName));
+      $sheet->setCellValue("Q" . ($startRow + $no), implode(", ", $otherCostName));
 
       $no++;
     }

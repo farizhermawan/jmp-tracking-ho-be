@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
  * App\Transaction
  *
  * @property int $id
+ * @property string|null $itruck
  * @property string|null $container_no
  * @property string $police_number
  * @property string $driver_name
@@ -42,6 +43,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereDepoMt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereDriverName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereItruck($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereKenekName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction wherePoliceNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction wherePostId($value)

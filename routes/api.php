@@ -65,6 +65,7 @@ Route::group(['prefix' => 'api', 'namespace' => 'API'], function () {
     Route::post('/ballance/add', 'BallanceController@addBallance');
 
     Route::post('/jot/view', 'TransactionController@viewJot');
+    Route::post('/jot/validation', 'TransactionController@validation');
     Route::post('/jot/submit', 'TransactionController@saveJot');
     Route::post('/jot/revise', 'TransactionController@reviseJot');
     Route::post('/jot/update', 'TransactionController@updateJot');

@@ -11,6 +11,7 @@ use App\Enums\Entity;
 use App\Enums\HttpStatus;
 use App\Enums\RefCode;
 use App\FinancialRecord;
+use App\Helpers\Report\TransactionDetailReport;
 use App\Helpers\Report\TransactionReport;
 use App\Http\Controllers\Controller;
 use App\Transaction;
@@ -340,146 +341,18 @@ class TransactionController extends Controller
 
   public function exportDetail(Request $request)
   {
-    setlocale(LC_TIME, 'Indonesian');
-    Carbon::setLocale("id");
-    $this->user = \Auth::user();
-
-    $now = Carbon::now()->addMonth(1);
-    $hash = md5($now->timestamp);
     $param = json_decode($request->getContent());
-    $template = storage_path("app/report-template/transaksi-detail.xlsx");
+    $report = new TransactionDetailReport();
+    return $report->generate($param);
+  }
 
-    try {
-      $spreadsheet = IOFactory::load($template);
-      $sheetSupir = $spreadsheet->getSheetByName("komisi supir");
-      $sheetKenek = $spreadsheet->getSheetByName("komisi kenek");
-      $sheetSummary = $spreadsheet->getSheetByName("summary");
-
-      $records = Transaction::getTransactions($param->dateStart, $param->dateEnd, $param->status);
-
-      $startRow = 2;
-      $minRow = 5;
-      $totalRow = $records->count();
-      if ($totalRow < $minRow) $totalRow = $minRow;
-      if ($totalRow > $minRow) {
-        $diffCount = $totalRow - $minRow;
-        $sheetSupir->insertNewRowBefore(11, $diffCount);
-        $sheetKenek->insertNewRowBefore(11, $diffCount);
-      }
-
-      $records = $records->all();
-      usort($records, function($a, $b) {
-        return $a->driver_name <=> $b->driver_name;
-      });
-
-      $no = 0;
-      $lastDriver = null;
-      $totalRecord = null;
-      foreach ($records as $record) {
-        if ($lastDriver == null) {
-          $lastDriver = $record->driver_name;
-          $totalRecord = 0;
-        }
-        $sheetSupir->setCellValue("A" . ($startRow + $no), $record->created_at->toDateString());
-        $sheetSupir->setCellValue("B" . ($startRow + $no), $record->created_at->toTimeString());
-        $sheetSupir->setCellValue("C" . ($startRow + $no), $record->driver_name);
-        $sheetSupir->setCellValue("D" . ($startRow + $no), $record->police_number);
-        $sheetSupir->setCellValue("E" . ($startRow + $no), $record->customer_name);
-        $sheetSupir->setCellValue("F" . ($startRow + $no), $record->route);
-        $sheetSupir->setCellValue("G" . ($startRow + $no), $record->commission);
-        if ($record->solar_cost > 0) {
-          $sheetSupir->setCellValue("H" . ($startRow + $no), $record->solar_cost);
-        } else {
-          foreach ($record->cost_entries as $cost_entry) {
-            if ($cost_entry['item'] == Common::BIAYA_SOLAR) {
-              $sheetSupir->setCellValue("H" . ($startRow + $no), $cost_entry['value']);
-              break;
-            }
-          }
-        }
-
-        $totalRecord++;
-        $no++;
-        if ($lastDriver != $record->driver_name || $no == $totalRow) {
-          $lastDriver = null;
-          $end = $no;
-          $start = $end - $totalRecord + 1;
-          if ($start < $startRow) $start = $startRow;
-          if ($end == $totalRow) $end++;
-          $sheetSupir->mergeCellsByColumnAndRow(10, $start, 10, $end);
-          $sheetSupir->setCellValue("J" . ($start), sprintf("=SUM(G%s:I%s)", $start, $end));
-          $sheetSupir->getStyle("A{$start}:J{$end}")->applyFromArray([
-            'borders' => [
-              'outline' => [
-                'borderStyle' => Border::BORDER_THIN
-              ]
-            ]
-          ]);
-        }
-      }
-      $sheetSummary->setCellValue("B3", "=SUM('komisi supir'!G{$startRow}:G{$end})");
-      $sheetSummary->setCellValue("B4", "=SUM('komisi supir'!H{$startRow}:H{$end})");
-      $sheetSummary->setCellValue("B6", "=SUM('komisi supir'!I{$startRow}:I{$end})");
-
-      usort($records, function($a, $b) {
-        return $a->kenek_name <=> $b->kenek_name;
-      });
-
-      $no = 0;
-      $lastKenek = null;
-      $totalRecord = null;
-      $totalSkipped = 0;
-      foreach ($records as $record) {
-        if ($record->kenek_name == "") {
-          $totalSkipped++;
-          continue;
-        }
-        if ($lastKenek == null) {
-          $lastKenek = $record->kenek_name;
-          $totalRecord = 0;
-        }
-        $sheetKenek->setCellValue("A" . ($startRow + $no), $record->created_at->toDateString());
-        $sheetKenek->setCellValue("B" . ($startRow + $no), $record->created_at->toTimeString());
-        $sheetKenek->setCellValue("C" . ($startRow + $no), $record->kenek_name);
-        $sheetKenek->setCellValue("D" . ($startRow + $no), $record->driver_name);
-        $sheetKenek->setCellValue("E" . ($startRow + $no), $record->police_number);
-        $sheetKenek->setCellValue("F" . ($startRow + $no), $record->customer_name);
-        $sheetKenek->setCellValue("G" . ($startRow + $no), $record->route);
-        $sheetKenek->setCellValue("H" . ($startRow + $no), $record->commission2);
-        $totalRecord++;
-        $no++;
-        if ($lastKenek != $record->kenek_name || $no + $totalSkipped == $totalRow) {
-          $lastKenek = null;
-          $end = $no;
-          $start = $end - $totalRecord + 1;
-          if ($start < $startRow) $start = $startRow;
-          if ($end == $totalRow - $totalSkipped) $end++;
-          $sheetKenek->mergeCellsByColumnAndRow(10, $start, 10, $end);
-          $sheetKenek->setCellValue("J" . ($start), sprintf("=SUM(H%s:I%s)", $start, $end));
-          $sheetKenek->getStyle("A{$start}:J{$end}")->applyFromArray([
-            'borders' => [
-              'outline' => [
-                'borderStyle' => Border::BORDER_THIN
-              ]
-            ]
-          ]);
-        }
-      }
-      $sheetSummary->setCellValue("B5", "=SUM('komisi kenek'!H{$startRow}:H{$end})");
-      $sheetSummary->setCellValue("B7", "=SUM('komisi kenek'!I{$startRow}:I{$end})");
-
-      $spreadsheet->setActiveSheetIndex(0);
-      $writer = new Xlsx($spreadsheet);
-      $writer->save(storage_path("app/public/{$hash}.xlsx"));
-
-      return response()->json(['message' => "success", "hash" => $hash], HttpStatus::SUCCESS);
-    } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
-      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
-    } catch (\PhpOffice\PhpSpreadsheet\Writer\Exception $e) {
-      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
-    } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
-      return response()->json(['message' => $e->getMessage(), 'e' => $e->getTrace(), 'f' => $e->getFile(), 'l' => $e->getLine()], HttpStatus::ERROR);
+  public function validation(Request $request) {
+    $result = ["passed" => true];
+    $param = json_decode($request->getContent());
+    if ($param->key == "itruck" && !Transaction::whereItruck($param->value)->exists()){
+      $result = ["passed" => false, "error" => "No I-Truck {$param->value} telah digunakan"];
     }
+    return response()->json($result, HttpStatus::SUCCESS);
   }
 
   private function createRoute($route)
@@ -535,6 +408,10 @@ class TransactionController extends Controller
       $jot->solar_cost = $param->solar_cost;
     }
 
+    if (isset($param->itruck)) {
+      if (Transaction::whereItruck($param->itruck)->exists()) throw new Exception("No I-Truck {$param->itruck} telah digunakan");
+      $jot->itruck = $param->itruck;
+    }
     if (isset($param->container_no)) $jot->container_no = $param->container_no;
     if (isset($param->sub_customer->name)) $jot->subcustomer_name = $param->sub_customer->name;
     if (isset($param->depo_mt->name)) $jot->depo_mt = $param->depo_mt->name;
