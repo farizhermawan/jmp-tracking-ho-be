@@ -350,11 +350,12 @@ class TransactionController extends Controller
   }
 
   public function validation(Request $request) {
-    $result = ["passed" => true];
+    $result = ["passed" => false];
     $param = json_decode($request->getContent());
-    if ($param->key == "itruck" && !Transaction::whereItruck($param->value)->exists()){
-      $result = ["passed" => false, "error" => "No I-Truck {$param->value} telah digunakan"];
+    if (!empty($param->itruck)) {
+      if (!Transaction::whereItruck($param->value)->exists()) $result["error"] = "No I-Truck {$param->value} telah digunakan";
     }
+    $result["passed"] = true;
     return response()->json($result, HttpStatus::SUCCESS);
   }
 
